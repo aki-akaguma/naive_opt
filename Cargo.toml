@@ -1,0 +1,28 @@
+[package]
+name = "naive_opt"
+version = "0.1.0"
+authors = ["aki <aki.akaguma@hotmail.com>"]
+edition = "2018"
+description = "The optimized naive string-search algorithm."
+keywords = ["search"]
+categories = ["algorithms"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+
+[features]
+
+[dependencies]
+memchr = "2.3"      # sse2
+
+[dev-dependencies]
+criterion = "0.3"
+
+[workspace]
+members = [
+    "xtask",
+]
+
+[[bench]]
+name = "bench-ss-algo"
+path = "benches/bench-ss-algo.rs"
+harness = false
