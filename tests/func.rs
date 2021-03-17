@@ -196,3 +196,20 @@ mod func_string_string {
         search_test!(&haystack, &"a 111".to_string(), Some(4));
     }
 }
+#[cfg(test)]
+mod func_search_indices {
+    use naive_opt::string_search_indices;
+    #[test]
+    fn test_search_indices_0() {
+        let haystack = "111 a 111b";
+        let needle = "1";
+        let mut m = string_search_indices(haystack, needle);
+        assert_eq!(m.next(), Some((0, "1")));
+        assert_eq!(m.next(), Some((1, "1")));
+        assert_eq!(m.next(), Some((2, "1")));
+        assert_eq!(m.next(), Some((6, "1")));
+        assert_eq!(m.next(), Some((7, "1")));
+        assert_eq!(m.next(), Some((8, "1")));
+        assert_eq!(m.next(), None);
+    }
+}

@@ -1,6 +1,6 @@
 [package]
 name = "naive_opt"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 edition = "2018"
 description = "The optimized naive string-search algorithm."
@@ -26,4 +26,9 @@ members = [
 [[bench]]
 name = "bench-ss-algo"
 path = "benches/bench-ss-algo.rs"
+harness = false
+
+[[bench]]
+name = "bench-ss-algo-indices"
+path = "benches/bench-ss-algo-indices.rs"
 harness = false

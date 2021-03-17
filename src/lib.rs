@@ -47,26 +47,78 @@ pub trait Search {
     ///
     /// return index of self, if it found the needle. Otherwise return None.
     ///
-    fn search<'a, P>(&'a self, needle: P) -> Option<usize>
-    where
-        P: SearchIn<'a>;
+    fn search<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize>;
+    ///
+    /// An iterator over the matches of needle in self.
+    ///
+    /// Examples
+    ///
+    /// ```rust
+    /// use naive_opt::Search;
+    ///
+    /// let v: Vec<_> = "abc345abc901abc".search_indices("abc").collect();
+    /// assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+    ///
+    /// let v: Vec<_> = "0abcabc7".search_indices("abc").collect();
+    /// assert_eq!(v, [(1, "abc"), (4, "abc")]);
+    ///
+    /// let v: Vec<_> = "ababa".search_indices("aba").collect();
+    /// assert_eq!(v, [(0, "aba")]); // only the first `aba`
+    /// ```
+    ///
+    fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P>;
 }
 impl<'c> Search for &'c str {
     #[inline]
-    fn search<'a, P>(&'a self, needle: P) -> Option<usize>
-    where
-        P: SearchIn<'a>,
-    {
+    fn search<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
         needle.search_in(self)
+    }
+    #[inline]
+    fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P> {
+        SearchIndices::new(self, needle)
     }
 }
 impl<'c> Search for String {
     #[inline]
-    fn search<'a, P>(&'a self, needle: P) -> Option<usize>
-    where
-        P: SearchIn<'a>,
-    {
+    fn search<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
         needle.search_in(self.as_str())
+    }
+    #[inline]
+    fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P> {
+        SearchIndices::new(self.as_str(), needle)
+    }
+}
+
+///
+/// Created with the method [search_indices].
+///
+pub struct SearchIndices<'a, P: SearchIn<'a>> {
+    curr_idx: usize,
+    haystack: &'a str,
+    needle: P,
+}
+impl<'a, P: SearchIn<'a>> SearchIndices<'a, P> {
+    fn new (a_haystack: &'a str, a_needle: P) -> SearchIndices<'a, P> {
+        SearchIndices {
+            curr_idx: 0,
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
+    type Item = (usize, &'a str);
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.search_in(&self.haystack[self.curr_idx..]) {
+            Some(idx) => {
+                self.curr_idx += idx;
+                let st = self.curr_idx;
+                let ed = st + self.needle.len();
+                self.curr_idx = ed;
+                Some((st, &self.haystack[st..ed]))
+            },
+            None => None
+        }
     }
 }
 
@@ -81,18 +133,30 @@ pub trait SearchIn<'a>: Sized {
     ///
     /// return index of the haystack, if it found self. Otherwise return None.
     ///
-    fn search_in(self, haystack: &'a str) -> Option<usize>;
+    fn search_in(&self, haystack: &'a str) -> Option<usize>;
+    ///
+    /// return the length of self
+    ///
+    fn len(&self) -> usize;
 }
 impl<'a, 'b> SearchIn<'a> for &'b str {
     #[inline]
-    fn search_in(self, haystack: &'a str) -> Option<usize> {
+    fn search_in(&self, haystack: &'a str) -> Option<usize> {
         string_search(haystack, self)
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        self.as_bytes().len()
     }
 }
 impl<'a, 'b> SearchIn<'a> for &'b String {
     #[inline]
-    fn search_in(self, haystack: &'a str) -> Option<usize> {
+    fn search_in(&self, haystack: &'a str) -> Option<usize> {
         string_search(haystack, self.as_str())
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        self.as_str().len()
     }
 }
 
@@ -103,6 +167,62 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
 ///
 pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
     naive_opt_mc_last(haystack, needle)
+}
+
+///
+/// An iterator over the matches of the needle in the haystack.
+///
+/// Examples
+///
+/// ```rust
+/// use naive_opt::string_search_indices;
+///
+/// let v: Vec<_> = string_search_indices("abc345abc901abc", "abc").collect();
+/// assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+///
+/// let v: Vec<_> = string_search_indices("0abcabc7", "abc").collect();
+/// assert_eq!(v, [(1, "abc"), (4, "abc")]);
+///
+/// let v: Vec<_> = string_search_indices("ababa", "aba").collect();
+/// assert_eq!(v, [(0, "aba")]); // only the first `aba`
+/// ```
+///
+///
+pub fn string_search_indices<'a, 'b>(haystack: &'a str, needle: &'b str) -> SearchIndices2<'a, 'b> {
+    SearchIndices2::new(haystack, needle)
+}
+
+///
+/// Created with the function [string_search_indices].
+///
+pub struct SearchIndices2<'a, 'b> {
+    curr_idx: usize,
+    haystack: &'a str,
+    needle: &'b str,
+}
+impl<'a, 'b> SearchIndices2<'a, 'b> {
+    fn new (a_haystack: &'a str, a_needle: &'b str) -> SearchIndices2<'a, 'b> {
+        SearchIndices2 {
+            curr_idx: 0,
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, 'b> Iterator for SearchIndices2<'a, 'b> {
+    type Item = (usize, &'a str);
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.search_in(&self.haystack[self.curr_idx..]) {
+            Some(idx) => {
+                self.curr_idx += idx;
+                let st = self.curr_idx;
+                let ed = st + self.needle.len();
+                self.curr_idx = ed;
+                Some((st, &self.haystack[st..ed]))
+            },
+            None => None
+        }
+    }
 }
 
 //
