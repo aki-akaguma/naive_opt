@@ -1,6 +1,26 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use naive_opt::Search;
 
+fn process_std_str_str(texts: &[&str], pattern: &str) -> usize {
+    let mut found: usize = 0;
+    for line in texts {
+        if let Some(_n) = line.find(pattern) {
+            found += 1;
+        }
+    }
+    found
+}
+
+fn process_std_string_string(texts: &[String], pattern: &String) -> usize {
+    let mut found: usize = 0;
+    for line in texts {
+        if let Some(_n) = line.find(pattern) {
+            found += 1;
+        }
+    }
+    found
+}
+
 fn process_func_str_str(texts: &[&str], pattern: &str) -> usize {
     let mut found: usize = 0;
     for line in texts {
@@ -48,6 +68,10 @@ fn criterion_benchmark(c: &mut Criterion) {
     let vv: Vec<&str> = v.iter().map(|item| item.as_str()).collect();
     let pat_string = pat_string_s.to_string();
     //
+    let n = process_std_str_str(black_box(&vv), black_box(pat_string_s));
+    assert_eq!(n, match_cnt);
+    let n = process_std_string_string(black_box(&v), black_box(&pat_string));
+    assert_eq!(n, match_cnt);
     let n = process_func_str_str(black_box(&vv), black_box(pat_string_s));
     assert_eq!(n, match_cnt);
     let n = process_func_string_string(black_box(&v), black_box(&pat_string));
@@ -57,6 +81,16 @@ fn criterion_benchmark(c: &mut Criterion) {
     let n = process_trait_string_string(black_box(&v), black_box(&pat_string));
     assert_eq!(n, match_cnt);
     //
+    c.bench_function("std_str_str", |b| {
+        b.iter(|| {
+            let _r = process_std_str_str(black_box(&vv), black_box(pat_string_s));
+        })
+    });
+    c.bench_function("std_string_string", |b| {
+        b.iter(|| {
+            let _r = process_std_string_string(black_box(&v), black_box(&pat_string));
+        })
+    });
     c.bench_function("func_str_str", |b| {
         b.iter(|| {
             let _r = process_func_str_str(black_box(&vv), black_box(pat_string_s));

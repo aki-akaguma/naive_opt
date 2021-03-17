@@ -1,38 +1,86 @@
 //!
+//! The optimized naive string-search algorithm.
 //!
+//! * Enhanced with 1-byte search like the libc++ and the libstd++ string::find
+//! * Specializing in UTF-8 strings, which is a feature of rust
+//! * Support the zero overhead trait.
+//!
+//! # Examples
+//!
+//! ## Example function:
+//!
+//! ```rust
+//! use naive_opt::string_search;
+//! let haystack = "111 a 111b";
+//! let needle = "a";
+//! let r = string_search(haystack, needle);
+//! assert_eq!(r, Some(4));
+//! ```
+//!
+//! ## Example trait 1:
+//!
+//! ```rust
+//! use naive_opt::Search;
+//! let haystack = "111 a 111b";
+//! let needle = "a";
+//! let r = haystack.search(needle);
+//! assert_eq!(r, Some(4));
+//! ```
+//!
+//! ## Example trait 2:
+//!
+//! ```rust
+//! use naive_opt::SearchIn;
+//! let haystack = "111 a 111b";
+//! let needle = "a";
+//! let r = needle.search_in(haystack);
+//! assert_eq!(r, Some(4));
+//! ```
 //!
 
 ///
-///
+/// search the needle
 ///
 pub trait Search {
-    fn search<'a, P>(&'a self, pat: P) -> Option<usize>
+    ///
+    /// search the needle in self.
+    ///
+    /// return index of self, if it found the needle. Otherwise return None.
+    ///
+    fn search<'a, P>(&'a self, needle: P) -> Option<usize>
     where
         P: SearchIn<'a>;
 }
 impl<'c> Search for &'c str {
     #[inline]
-    fn search<'a, P>(&'a self, pat: P) -> Option<usize>
+    fn search<'a, P>(&'a self, needle: P) -> Option<usize>
     where
         P: SearchIn<'a>,
     {
-        pat.search_in(self)
+        needle.search_in(self)
     }
 }
 impl<'c> Search for String {
     #[inline]
-    fn search<'a, P>(&'a self, pat: P) -> Option<usize>
+    fn search<'a, P>(&'a self, needle: P) -> Option<usize>
     where
         P: SearchIn<'a>,
     {
-        pat.search_in(self.as_str())
+        needle.search_in(self.as_str())
     }
 }
 
 ///
+/// search in the haystack
 ///
+/// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub trait SearchIn<'a>: Sized {
+    ///
+    /// search self in the haystack.
+    ///
+    /// return index of the haystack, if it found self. Otherwise return None.
+    ///
     fn search_in(self, haystack: &'a str) -> Option<usize>;
 }
 impl<'a, 'b> SearchIn<'a> for &'b str {
@@ -49,7 +97,9 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
 }
 
 ///
+/// seach the needle in the haystack
 ///
+/// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
     naive_opt_mc_last(haystack, needle)
