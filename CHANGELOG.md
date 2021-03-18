@@ -2,6 +2,11 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.3 (2021-03-18)
+=====
+
+* tune up search_indices
+
 0.1.2 (2021-03-17)
 =====
 

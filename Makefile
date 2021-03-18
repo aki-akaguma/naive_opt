@@ -1,5 +1,5 @@
-#BENCH_STR = --bench=bench-ss-algo --bench=bench-ss-algo-indices
-BENCH_STR = --bench=bench-ss-algo-indices
+BENCH_STR = --bench=bench-ss-algo --bench=bench-ss-algo-indices
+#BENCH_STR = --bench=bench-ss-algo-indices
 
 TARGET_MUSL = --target=x86_64-unknown-linux-musl
 TSK = taskset -c 2

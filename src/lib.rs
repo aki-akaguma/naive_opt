@@ -108,6 +108,7 @@ impl<'a, P: SearchIn<'a>> SearchIndices<'a, P> {
 }
 impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
     type Item = (usize, &'a str);
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         match self.needle.search_in(&self.haystack[self.curr_idx..]) {
             Some(idx) => {
@@ -142,7 +143,7 @@ pub trait SearchIn<'a>: Sized {
 impl<'a, 'b> SearchIn<'a> for &'b str {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        string_search(haystack, self)
+        naive_opt_mc_last(haystack, self)
     }
     #[inline]
     fn len(&self) -> usize {
@@ -152,7 +153,7 @@ impl<'a, 'b> SearchIn<'a> for &'b str {
 impl<'a, 'b> SearchIn<'a> for &'b String {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        string_search(haystack, self.as_str())
+        naive_opt_mc_last(haystack, self.as_str())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -211,6 +212,7 @@ impl<'a, 'b> SearchIndices2<'a, 'b> {
 }
 impl<'a, 'b> Iterator for SearchIndices2<'a, 'b> {
     type Item = (usize, &'a str);
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         match self.needle.search_in(&self.haystack[self.curr_idx..]) {
             Some(idx) => {
