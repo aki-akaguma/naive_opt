@@ -1,6 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use naive_opt::Search;
 
+#[inline(never)]
 fn process_std_str_str(texts: &[&str], pattern: &str) -> usize {
     let mut found: usize = 0;
     for line in texts {
@@ -11,6 +12,7 @@ fn process_std_str_str(texts: &[&str], pattern: &str) -> usize {
     found
 }
 
+#[inline(never)]
 fn process_func_str_str(texts: &[&str], pattern: &str) -> usize {
     let mut found: usize = 0;
     for line in texts {
@@ -21,6 +23,7 @@ fn process_func_str_str(texts: &[&str], pattern: &str) -> usize {
     found
 }
 
+#[inline(never)]
 fn process_trait_str_str(texts: &[&str], pattern: &str) -> usize {
     let mut found: usize = 0;
     for line in texts {

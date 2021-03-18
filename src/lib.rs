@@ -237,6 +237,7 @@ impl<'a, 'b> Iterator for SearchIndices2<'a, 'b> {
 //
 // I think it is stochastically effective to use the last byte for seaching.
 //
+#[inline(always)]
 fn naive_opt_mc_last(haystack: &str, needle: &str) -> Option<usize> {
     let hay_bytes = haystack.as_bytes();
     let nee_bytes = needle.as_bytes();

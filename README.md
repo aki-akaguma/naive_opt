@@ -41,15 +41,15 @@ assert_eq!(r, Some(4));
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  314.190 uc |  280.340 uc |  319.940 uc |  276.370 uc |
-| std_string_string       |  315.330 uc |  282.610 uc |  326.080 uc |  275.660 uc |
-| func_str_str            |   41.707 uc |   41.724 uc |   45.775 uc |   45.949 uc |
-| func_string_string      |   41.828 uc |   41.826 uc |   45.820 uc |   45.748 uc |
-| trait_str_str           |   41.709 uc |   41.737 uc |   45.795 uc |   45.934 uc |
-| trait_string_string     |   41.779 uc |   41.860 uc |   45.790 uc |   45.776 uc |
-| std_indices             |  341.490 uc |  258.910 uc |  340.680 uc |  256.040 uc |
-| func_indices            |   65.796 uc |   65.853 uc |   68.599 uc |   68.416 uc |
-| trait_indices           |   66.602 uc |   66.702 uc |   68.598 uc |   68.667 uc |
+| std_str_str             |  444.140 uc |  350.680 uc |  452.730 uc |  351.780 uc |
+| std_string_string       |  442.580 uc |  356.640 uc |  450.770 uc |  355.350 uc |
+| func_str_str            |   57.334 uc |   56.436 uc |   58.972 uc |   59.021 uc |
+| func_string_string      |   56.362 uc |   56.381 uc |   58.813 uc |   58.735 uc |
+| trait_str_str           |   57.250 uc |   56.488 uc |   59.303 uc |   59.414 uc |
+| trait_string_string     |   56.369 uc |   56.472 uc |   58.844 uc |   58.882 uc |
+| std_indices             |  348.210 uc |  268.740 uc |  347.280 uc |  265.080 uc |
+| func_indices            |   66.154 uc |   66.333 uc |   68.518 uc |   68.825 uc |
+| trait_indices           |   66.030 uc |   66.011 uc |   68.792 uc |   68.714 uc |
 
 - std is std::str::find()
 - `us` is micro seconds

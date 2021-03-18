@@ -1,61 +1,133 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use naive_opt::Search;
 
+#[inline(never)]
 fn process_std_str_str(texts: &[&str], pattern: &str) -> usize {
+    let pattern_len = pattern.len();
     let mut found: usize = 0;
     for line in texts {
-        if let Some(_n) = line.find(pattern) {
-            found += 1;
+        let line_len = line.len();
+        let mut st = 0;
+        loop {
+            if let Some(n) = &line[st..].find(pattern) {
+                found += 1;
+                st = n + pattern_len;
+                if st >= line_len {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     found
 }
 
+#[inline(never)]
 fn process_std_string_string(texts: &[String], pattern: &String) -> usize {
+    let pattern_len = pattern.len();
     let mut found: usize = 0;
     for line in texts {
-        if let Some(_n) = line.find(pattern) {
-            found += 1;
+        let line_len = line.len();
+        let mut st = 0;
+        loop {
+            if let Some(n) = &line[st..].find(pattern) {
+                found += 1;
+                st = n + pattern_len;
+                if st >= line_len {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     found
 }
 
+#[inline(never)]
 fn process_func_str_str(texts: &[&str], pattern: &str) -> usize {
+    let pattern_len = pattern.len();
     let mut found: usize = 0;
     for line in texts {
-        if let Some(_n) = naive_opt::string_search(line, pattern) {
-            found += 1;
+        let line_len = line.len();
+        let mut st = 0;
+        loop {
+            if let Some(n) = naive_opt::string_search(&line[st..], pattern) {
+                found += 1;
+                st = n + pattern_len;
+                if st >= line_len {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     found
 }
 
+#[inline(never)]
 fn process_func_string_string(texts: &[String], pattern: &String) -> usize {
+    let pattern_len = pattern.len();
     let mut found: usize = 0;
     for line in texts {
-        if let Some(_n) = naive_opt::string_search(line, pattern) {
-            found += 1;
+        let line_len = line.len();
+        let mut st = 0;
+        loop {
+            if let Some(n) = naive_opt::string_search(&line[st..], pattern) {
+                found += 1;
+                st = n + pattern_len;
+                if st >= line_len {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     found
 }
 
+#[inline(never)]
 fn process_trait_str_str(texts: &[&str], pattern: &str) -> usize {
+    let pattern_len = pattern.len();
     let mut found: usize = 0;
     for line in texts {
-        if let Some(_n) = line.search(pattern) {
-            found += 1;
+        let line_len = line.len();
+        let mut st = 0;
+        loop {
+            if let Some(n) = (&line[st..]).search(pattern) {
+                found += 1;
+                st = n + pattern_len;
+                if st >= line_len {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     found
 }
 
+#[inline(never)]
 fn process_trait_string_string(texts: &[String], pattern: &String) -> usize {
+    let pattern_len = pattern.len();
     let mut found: usize = 0;
     for line in texts {
-        if let Some(_n) = line.search(pattern) {
-            found += 1;
+        let line_len = line.len();
+        let mut st = 0;
+        loop {
+            if let Some(n) = (&line[st..]).search(pattern) {
+                found += 1;
+                st = n + pattern_len;
+                if st >= line_len {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     found
