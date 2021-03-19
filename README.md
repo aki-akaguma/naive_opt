@@ -18,10 +18,6 @@ compatibility:
 | std::str::find()     | naive_opt::Search::search()   |
 | std::str::contains() | naive_opt::Search::includes() |
 
-## Todos
-
-- [ ] rsearch, reverse search
-
 ## Examples
 
 ### Example function:
@@ -58,15 +54,15 @@ assert_eq!(r, Some(4));
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  445.100 uc |  351.770 uc |  453.920 uc |  374.950 uc |
-| std_string_string       |  438.650 uc |  353.290 uc |  456.160 uc |  376.580 uc |
-| func_str_str            |   57.182 uc |   56.293 uc |   59.289 uc |   59.012 uc |
-| func_string_string      |   56.079 uc |   56.269 uc |   58.694 uc |   58.678 uc |
-| trait_str_str           |   50.418 uc |   49.367 uc |   52.200 uc |   52.112 uc |
-| trait_string_string     |   49.448 uc |   49.501 uc |   52.080 uc |   52.057 uc |
-| std_indices             |  338.080 uc |  260.590 uc |  357.770 uc |  266.960 uc |
-| func_indices            |   55.877 uc |   55.891 uc |   58.164 uc |   58.097 uc |
-| trait_indices           |   51.534 uc |   51.547 uc |   54.863 uc |   54.808 uc |
+| std_str_str             |  445.560 uc |  355.440 uc |  458.540 uc |  359.400 uc |
+| std_string_string       |  450.900 uc |  355.110 uc |  453.940 uc |  354.490 uc |
+| func_str_str            |   57.928 uc |   56.888 uc |   59.602 uc |   59.365 uc |
+| func_string_string      |   56.754 uc |   56.721 uc |   59.276 uc |   59.016 uc |
+| trait_str_str           |   50.825 uc |   49.719 uc |   52.659 uc |   52.919 uc |
+| trait_string_string     |   49.898 uc |   49.951 uc |   52.263 uc |   52.721 uc |
+| std_indices             |  349.200 uc |  269.560 uc |  373.310 uc |  267.570 uc |
+| func_indices            |   51.955 uc |   52.269 uc |   55.074 uc |   54.534 uc |
+| trait_indices           |   52.235 uc |   52.201 uc |   54.549 uc |   54.589 uc |
 
 - std is std::str::find()
 - `us` is micro seconds
@@ -75,3 +71,11 @@ assert_eq!(r, Some(4));
 - `musl` is x86_64-unknown-linux-musl
 - compile by rustc 1.50.0 (cb75ad5db 2021-02-10)
 - bench on intel Q6600 @ 2.40GHz
+
+## Todos
+
+- [ ] rsearch, reverse search
+
+## Changelogs
+
+https://github.com/aki-akaguma/naive_opt/blob/main/CHANGELOG.md

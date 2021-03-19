@@ -105,7 +105,7 @@ impl<'c> Search for String {
 }
 
 ///
-/// Created with the method [search_indices].
+/// Created with the method [Search::search_indices()].
 ///
 pub struct SearchIndices<'a, P: SearchIn<'a>> {
     curr_idx: usize,
@@ -123,7 +123,7 @@ impl<'a, P: SearchIn<'a>> SearchIndices<'a, P> {
 }
 impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
     type Item = (usize, &'a str);
-    #[inline]
+    #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
         match self.needle.search_in(&self.haystack[self.curr_idx..]) {
             Some(idx) => {
@@ -223,7 +223,11 @@ pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
 /// assert_eq!(v, [(0, "aba")]); // only the first `aba`
 /// ```
 ///
-///
+pub fn string_search_indices<'a, P: SearchIn<'a>>(haystack: &'a str, needle: P) -> SearchIndices<'a, P> {
+    SearchIndices::new(haystack, needle)
+}
+
+/*
 pub fn string_search_indices<'a, 'b>(haystack: &'a str, needle: &'b str) -> SearchIndices2<'a, 'b> {
     SearchIndices2::new(haystack, needle)
 }
@@ -247,7 +251,7 @@ impl<'a, 'b> SearchIndices2<'a, 'b> {
 }
 impl<'a, 'b> Iterator for SearchIndices2<'a, 'b> {
     type Item = (usize, &'a str);
-    #[inline]
+    #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
         match self.needle.search_in(&self.haystack[self.curr_idx..]) {
             Some(idx) => {
@@ -261,6 +265,7 @@ impl<'a, 'b> Iterator for SearchIndices2<'a, 'b> {
         }
     }
 }
+*/
 
 //
 // Only UTF-8 character sequence are used in the rust.

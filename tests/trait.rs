@@ -364,4 +364,28 @@ mod std_from_test_std {
         let x = "There are moments, Jeeves, when one asks oneself, 'Do trousers matter?'";
         helper_check_contains_all_substrings(x);
     }
+    //
+    #[test]
+    fn contains_weird_cases() {
+        assert!("* \t".includes(' '));
+        assert!(!"* \t".includes('?'));
+        assert!(!"* \t".includes('\u{1F4A9}'));
+    }
+    /*
+    //
+    #[test]
+    fn different_str_pattern_forwarding_lifetimes() {
+        use std::str::pattern::Pattern;
+        //
+        fn foo<'a, P>(p: P)
+        where
+            for<'b> &'b P: Pattern<'a>,
+        {
+            for _ in 0..3 {
+                "asdf".find(&p);
+            }
+        }
+        foo::<&str>("x");
+    }
+    */
 }
