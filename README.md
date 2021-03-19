@@ -5,6 +5,23 @@ The optimized naive string-search algorithm.
 * Specializing in UTF-8 strings, which is a feature of rust
 * Support the zero overhead trait.
 
+## Compatibility
+
+This crate is implemented to replace the rust std library.
+However, the method names are different, so please rewrite your code.
+It shouldn't be too difficult.
+
+compatibility:
+|:---------------------|:------------------------------|
+| rust std::str        | this crate                    |
+|:---------------------|:------------------------------|
+| std::str::find()     | naive_opt::Search::search()   |
+| std::str::contains() | naive_opt::Search::includes() |
+
+## Todos
+
+- [ ] rsearch, reverse search
+
 ## Examples
 
 ### Example function:

@@ -67,6 +67,13 @@ pub trait Search {
     /// ```
     ///
     fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P>;
+    ///
+    /// includes the needle in self.
+    ///
+    /// returns true if the given pattern matches a sub-slice of this string slice.
+    /// returns false if it does not.
+    ///
+    fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool;
 }
 impl<'c> Search for &'c str {
     #[inline]
@@ -77,6 +84,10 @@ impl<'c> Search for &'c str {
     fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P> {
         SearchIndices::new(self, needle)
     }
+    #[inline]
+    fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in(self)
+    }
 }
 impl<'c> Search for String {
     #[inline]
@@ -86,6 +97,10 @@ impl<'c> Search for String {
     #[inline]
     fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P> {
         SearchIndices::new(self.as_str(), needle)
+    }
+    #[inline]
+    fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in(self)
     }
 }
 
@@ -139,6 +154,16 @@ pub trait SearchIn<'a>: Sized {
     /// return the length of self
     ///
     fn len(&self) -> usize;
+    ///
+    /// includes self in the haystack.
+    ///
+    /// returns true if the given pattern matches a sub-slice of this string slice.
+    /// returns false if it does not.
+    ///
+    #[inline]
+    fn includes_in(&self, haystack: &'a str) -> bool {
+        !self.search_in(haystack).is_none()
+    }
 }
 impl<'a, 'b> SearchIn<'a> for &'b str {
     #[inline]
@@ -158,6 +183,16 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
     #[inline]
     fn len(&self) -> usize {
         self.as_str().len()
+    }
+}
+impl<'a, 'b> SearchIn<'a> for char {
+    #[inline]
+    fn search_in(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_last(haystack, self.to_string().as_str())
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        self.to_string().as_bytes().len()
     }
 }
 

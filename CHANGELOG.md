@@ -2,6 +2,9 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* add impl SearchIn for char
+* add Search::includes()
+
 0.1.3 (2021-03-18)
 =====
 

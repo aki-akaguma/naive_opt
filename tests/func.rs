@@ -196,6 +196,7 @@ mod func_string_string {
         search_test!(&haystack, &"a 111".to_string(), Some(4));
     }
 }
+
 #[cfg(test)]
 mod func_search_indices {
     use naive_opt::string_search_indices;
