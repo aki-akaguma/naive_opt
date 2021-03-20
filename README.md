@@ -1,9 +1,13 @@
 # naive_opt
 The optimized naive string-search algorithm.
 
+## Features
+
+* The naive string-searching algorithm
 * Enhanced with 1-byte search like the libc++ and the libstd++ string::find
 * Specializing in UTF-8 strings, which is a feature of rust
 * Support the zero overhead trait.
+* minimum support: rustc 1.41.1 (f3e1a954d 2020-02-24)
 
 ## Compatibility
 
@@ -12,42 +16,69 @@ However, the method names are different, so please rewrite your code.
 It shouldn't be too difficult.
 
 compatibility:
-|:---------------------|:------------------------------|
-| rust std::str        | this crate                    |
-|:---------------------|:------------------------------|
-| std::str::find()     | naive_opt::Search::search()   |
-| std::str::contains() | naive_opt::Search::includes() |
+|:-----------------------------|:---------------------------------------|
+| rust `std::str`              | this crate                             |
+|:-----------------------------|:---------------------------------------|
+| `std::str::find()`           | `naive_opt::Search::search()`          |
+| `std::str::rfind()`          | `naive_opt::Search::rsearch()`         |
+| `std::str::contains()`       | `naive_opt::Search::includes()`        |
+| `std::str::match_indices()`  | `naive_opt::Search::search_indices()`  |
+| `std::str::rmatch_indices()` | `naive_opt::Search::rsearch_indices()` |
+
 
 ## Examples
 
 ### Example function:
 
 ```rust
-use naive_opt::string_search;
+use naive_opt::{string_search, string_rsearch};
+use naive_opt::{string_search_indices, string_rsearch_indices};
+
 let haystack = "111 a 111b";
 let needle = "a";
 let r = string_search(haystack, needle);
 assert_eq!(r, Some(4));
+
+assert_eq!(string_search(haystack, "1"), Some(0));
+assert_eq!(string_rsearch(haystack, "1"), Some(8));
+
+let v: Vec<_> = string_search_indices("abc345abc901abc", "abc").collect();
+assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+let v: Vec<_> = string_rsearch_indices("abc345abc901abc", "abc").collect();
+assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
 ```
 
-### Example trait 1:
+### Example trait: Search
 
 ```rust
 use naive_opt::Search;
+
 let haystack = "111 a 111b";
 let needle = "a";
 let r = haystack.search(needle);
 assert_eq!(r, Some(4));
+
+assert_eq!(haystack.search("1"), Some(0));
+assert_eq!(haystack.rsearch("1"), Some(8));
+
+let v: Vec<_> = "abc345abc901abc".search_indices("abc").collect();
+assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+let v: Vec<_> = "abc345abc901abc".rsearch_indices("abc").collect();
+assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
 ```
 
-### Example trait 2:
+### Example trait: SearchIn
 
 ```rust
 use naive_opt::SearchIn;
+
 let haystack = "111 a 111b";
 let needle = "a";
 let r = needle.search_in(haystack);
 assert_eq!(r, Some(4));
+
+assert_eq!("1".search_in(haystack), Some(0));
+assert_eq!("1".rsearch_in(haystack), Some(8));
 ```
 
 ## Benchmark
@@ -72,10 +103,14 @@ assert_eq!(r, Some(4));
 - compile by rustc 1.50.0 (cb75ad5db 2021-02-10)
 - bench on intel Q6600 @ 2.40GHz
 
-## Todos
-
-- [ ] rsearch, reverse search
 
 ## Changelogs
 
-https://github.com/aki-akaguma/naive_opt/blob/main/CHANGELOG.md
+[This crate's changelog here.](https://github.com/aki-akaguma/naive_opt/blob/main/CHANGELOG.md)
+
+
+## References
+
+[my research: string searching algorithm](https://github.com/aki-akaguma/cmp_string_searching_algorithm)
+[my research: string find](https://github.com/aki-akaguma/cmp_string_find)
+[wikipedia: string searching algprithm](https://en.wikipedia.org/wiki/String-searching_algorithm)

@@ -4,6 +4,12 @@ macro_rules! search_test {
         assert_eq!(r, $result);
     };
 }
+macro_rules! rsearch_test {
+    ($haystack:expr, $needle:expr, $result:expr) => {
+        let r = $haystack.rsearch($needle);
+        assert_eq!(r, $result);
+    };
+}
 
 #[cfg(test)]
 mod trait_str_str {
@@ -198,6 +204,54 @@ mod trait_string_string {
 }
 
 #[cfg(test)]
+mod trait_str_str_rev {
+    use naive_opt::Search;
+    #[test]
+    fn test_empty_needle() {
+        rsearch_test!("", "", Some(0)); // ***
+        rsearch_test!("1", "", Some(1)); // ***
+        let haystack = "111 a 111b";
+        rsearch_test!(haystack, "", Some(10)); // ***
+    }
+    #[test]
+    fn test_not_found() {
+        let haystack = "111 a 111b";
+        rsearch_test!(haystack, "xxx", None);
+        rsearch_test!(haystack, "12b", None);
+        rsearch_test!(haystack, "a31", None);
+    }
+    #[test]
+    fn test_perfect_matching() {
+        let haystack = "111 a 111b";
+        let needle = "111 a 111b";
+        rsearch_test!(haystack, needle, Some(0));
+    }
+    #[test]
+    fn test_same_size() {
+        let haystack = "111 a 111b";
+        let needle = "111 a 1 1b";
+        rsearch_test!(haystack, needle, None);
+    }
+    #[test]
+    fn test_large_needle() {
+        let haystack = "111 a 111b";
+        let needle = "111 a 111bZ";
+        rsearch_test!(haystack, needle, None);
+    }
+    #[test]
+    fn test_last_match() {
+        let haystack = "111 a 111b";
+        rsearch_test!(haystack, "b", Some(9));
+    }
+    #[test]
+    fn test_small_needle() {
+        let haystack = "111 a 111b";
+        rsearch_test!(haystack, "a", Some(4));
+        rsearch_test!(haystack, "a 111", Some(4));
+    }
+}
+
+#[cfg(test)]
 mod trai_search_indices {
     use naive_opt::Search;
     #[test]
@@ -211,6 +265,24 @@ mod trai_search_indices {
         assert_eq!(m.next(), Some((6, "1")));
         assert_eq!(m.next(), Some((7, "1")));
         assert_eq!(m.next(), Some((8, "1")));
+        assert_eq!(m.next(), None);
+    }
+}
+
+#[cfg(test)]
+mod trai_rsearch_indices {
+    use naive_opt::Search;
+    #[test]
+    fn test_rsearch_indices_0() {
+        let haystack = "111 a 111b";
+        let needle = "1";
+        let mut m = haystack.rsearch_indices(needle);
+        assert_eq!(m.next(), Some((8, "1")));
+        assert_eq!(m.next(), Some((7, "1")));
+        assert_eq!(m.next(), Some((6, "1")));
+        assert_eq!(m.next(), Some((2, "1")));
+        assert_eq!(m.next(), Some((1, "1")));
+        assert_eq!(m.next(), Some((0, "1")));
         assert_eq!(m.next(), None);
     }
 }
@@ -232,17 +304,15 @@ mod std_from_test_std {
         //assert_eq!("ประเทศไทย中华Việt Nam".find(|c: char| c == '华'), Some(30));
     }
     //
-    /*
     #[test]
     fn test_rfind() {
         assert_eq!("hello".rsearch('l'), Some(3));
-        assert_eq!("hello".rsearch(|c: char| c == 'o'), Some(4));
+        //assert_eq!("hello".rsearch(|c: char| c == 'o'), Some(4));
         assert!("hello".rsearch('x').is_none());
-        assert!("hello".rsearch(|c: char| c == 'x').is_none());
+        //assert!("hello".rsearch(|c: char| c == 'x').is_none());
         assert_eq!("ประเทศไทย中华Việt Nam".rsearch('华'), Some(30));
-        assert_eq!("ประเทศไทย中华Việt Nam".rsearch(|c: char| c == '华'), Some(30));
+        //assert_eq!("ประเทศไทย中华Việt Nam".rsearch(|c: char| c == '华'), Some(30));
     }
-    */
     //
     #[test]
     fn test_find_str() {
@@ -284,12 +354,10 @@ mod std_from_test_std {
                     None => false,
                     Some(x) => x <= i,
                 });
-                /*
                 assert!(match string.rsearch(pat) {
                     None => false,
                     Some(x) => x >= i,
                 });
-                */
             }
         }
     }

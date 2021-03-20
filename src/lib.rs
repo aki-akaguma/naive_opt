@@ -10,31 +10,54 @@
 //! ## Example function:
 //!
 //! ```rust
-//! use naive_opt::string_search;
+//! use naive_opt::{string_search, string_rsearch};
+//! use naive_opt::{string_search_indices, string_rsearch_indices};
+//!
 //! let haystack = "111 a 111b";
 //! let needle = "a";
 //! let r = string_search(haystack, needle);
 //! assert_eq!(r, Some(4));
+//!
+//! assert_eq!(string_search(haystack, "1"), Some(0));
+//! assert_eq!(string_rsearch(haystack, "1"), Some(8));
+//!
+//! let v: Vec<_> = string_search_indices("abc345abc901abc", "abc").collect();
+//! assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+//! let v: Vec<_> = string_rsearch_indices("abc345abc901abc", "abc").collect();
+//! assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
 //! ```
 //!
-//! ## Example trait 1:
+//! ## Example trait: Search
 //!
 //! ```rust
 //! use naive_opt::Search;
+//!
 //! let haystack = "111 a 111b";
 //! let needle = "a";
 //! let r = haystack.search(needle);
 //! assert_eq!(r, Some(4));
+//!
+//! assert_eq!(haystack.search("1"), Some(0));
+//! assert_eq!(haystack.rsearch("1"), Some(8));
+//!
+//! let v: Vec<_> = "abc345abc901abc".search_indices("abc").collect();
+//! assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+//! let v: Vec<_> = "abc345abc901abc".rsearch_indices("abc").collect();
+//! assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
 //! ```
 //!
-//! ## Example trait 2:
+//! ## Example trait: SearchIn
 //!
 //! ```rust
 //! use naive_opt::SearchIn;
+//!
 //! let haystack = "111 a 111b";
 //! let needle = "a";
 //! let r = needle.search_in(haystack);
 //! assert_eq!(r, Some(4));
+//!
+//! assert_eq!("1".search_in(haystack), Some(0));
+//! assert_eq!("1".rsearch_in(haystack), Some(8));
 //! ```
 //!
 
@@ -48,6 +71,12 @@ pub trait Search {
     /// return index of self, if it found the needle. Otherwise return None.
     ///
     fn search<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize>;
+    ///
+    /// reverse search the needle in self.
+    ///
+    /// return index of self, if it found the needle. Otherwise return None.
+    ///
+    fn rsearch<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize>;
     ///
     /// An iterator over the matches of needle in self.
     ///
@@ -68,6 +97,25 @@ pub trait Search {
     ///
     fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P>;
     ///
+    /// An reverse search iterator over the matches of needle in self.
+    ///
+    /// Examples
+    ///
+    /// ```rust
+    /// use naive_opt::Search;
+    ///
+    /// let v: Vec<_> = "abc345abc901abc".rsearch_indices("abc").collect();
+    /// assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
+    ///
+    /// let v: Vec<_> = "0abcabc7".rsearch_indices("abc").collect();
+    /// assert_eq!(v, [(4, "abc"), (1, "abc")]);
+    ///
+    /// let v: Vec<_> = "ababa".rsearch_indices("aba").collect();
+    /// assert_eq!(v, [(2, "aba")]); // only the last `aba`
+    /// ```
+    ///
+    fn rsearch_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> RevSearchIndices<'a, P>;
+    ///
     /// includes the needle in self.
     ///
     /// returns true if the given pattern matches a sub-slice of this string slice.
@@ -81,8 +129,16 @@ impl<'c> Search for &'c str {
         needle.search_in(self)
     }
     #[inline]
+    fn rsearch<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in(self)
+    }
+    #[inline]
     fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P> {
         SearchIndices::new(self, needle)
+    }
+    #[inline]
+    fn rsearch_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> RevSearchIndices<'a, P> {
+        RevSearchIndices::new(self, needle)
     }
     #[inline]
     fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
@@ -95,8 +151,16 @@ impl<'c> Search for String {
         needle.search_in(self.as_str())
     }
     #[inline]
+    fn rsearch<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in(self.as_str())
+    }
+    #[inline]
     fn search_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndices<'a, P> {
         SearchIndices::new(self.as_str(), needle)
+    }
+    #[inline]
+    fn rsearch_indices<'a, P: SearchIn<'a>>(&'a self, needle: P) -> RevSearchIndices<'a, P> {
+        RevSearchIndices::new(self.as_str(), needle)
     }
     #[inline]
     fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
@@ -139,6 +203,39 @@ impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
 }
 
 ///
+/// Created with the method [Search::rsearch_indices()].
+///
+pub struct RevSearchIndices<'a, P: SearchIn<'a>> {
+    curr_ed: usize,
+    haystack: &'a str,
+    needle: P,
+}
+impl<'a, P: SearchIn<'a>> RevSearchIndices<'a, P> {
+    fn new (a_haystack: &'a str, a_needle: P) -> RevSearchIndices<'a, P> {
+        RevSearchIndices {
+            curr_ed: a_haystack.len(),
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchIn<'a>> Iterator for RevSearchIndices<'a, P> {
+    type Item = (usize, &'a str);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.rsearch_in(&self.haystack[0..self.curr_ed]) {
+            Some(idx) => {
+                let st = idx;
+                let ed = st + self.needle.len();
+                self.curr_ed = st;
+                Some((st, &self.haystack[st..ed]))
+            },
+            None => None
+        }
+    }
+}
+
+///
 /// search in the haystack
 ///
 /// return index of the haystack, if it found the needle. Otherwise return None.
@@ -150,6 +247,12 @@ pub trait SearchIn<'a>: Sized {
     /// return index of the haystack, if it found self. Otherwise return None.
     ///
     fn search_in(&self, haystack: &'a str) -> Option<usize>;
+    ///
+    /// reverse search self in the haystack.
+    ///
+    /// return index of the haystack, if it found self. Otherwise return None.
+    ///
+    fn rsearch_in(&self, haystack: &'a str) -> Option<usize>;
     ///
     /// return the length of self
     ///
@@ -171,6 +274,10 @@ impl<'a, 'b> SearchIn<'a> for &'b str {
         naive_opt_mc_last(haystack, self)
     }
     #[inline]
+    fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_last_rev(haystack, self)
+    }
+    #[inline]
     fn len(&self) -> usize {
         self.as_bytes().len()
     }
@@ -179,6 +286,10 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
         naive_opt_mc_last(haystack, self.as_str())
+    }
+    #[inline]
+    fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_last_rev(haystack, self.as_str())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -191,18 +302,31 @@ impl<'a, 'b> SearchIn<'a> for char {
         naive_opt_mc_last(haystack, self.to_string().as_str())
     }
     #[inline]
+    fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_last_rev(haystack, self.to_string().as_str())
+    }
+    #[inline]
     fn len(&self) -> usize {
         self.to_string().as_bytes().len()
     }
 }
 
 ///
-/// seach the needle in the haystack
+/// search the needle in the haystack
 ///
 /// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
     naive_opt_mc_last(haystack, needle)
+}
+
+///
+/// reverse search the needle in the haystack
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_rsearch(haystack: &str, needle: &str) -> Option<usize> {
+    naive_opt_mc_last_rev(haystack, needle)
 }
 
 ///
@@ -227,45 +351,27 @@ pub fn string_search_indices<'a, P: SearchIn<'a>>(haystack: &'a str, needle: P) 
     SearchIndices::new(haystack, needle)
 }
 
-/*
-pub fn string_search_indices<'a, 'b>(haystack: &'a str, needle: &'b str) -> SearchIndices2<'a, 'b> {
-    SearchIndices2::new(haystack, needle)
-}
-
 ///
-/// Created with the function [string_search_indices].
+/// An reverse search iterator over the matches of the needle in the haystack.
 ///
-pub struct SearchIndices2<'a, 'b> {
-    curr_idx: usize,
-    haystack: &'a str,
-    needle: &'b str,
+/// Examples
+///
+/// ```rust
+/// use naive_opt::string_rsearch_indices;
+///
+/// let v: Vec<_> = string_rsearch_indices("abc345abc901abc", "abc").collect();
+/// assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
+///
+/// let v: Vec<_> = string_rsearch_indices("0abcabc7", "abc").collect();
+/// assert_eq!(v, [(4, "abc"), (1, "abc")]);
+///
+/// let v: Vec<_> = string_rsearch_indices("ababa", "aba").collect();
+/// assert_eq!(v, [(2, "aba")]); // only the last `aba`
+/// ```
+///
+pub fn string_rsearch_indices<'a, P: SearchIn<'a>>(haystack: &'a str, needle: P) -> RevSearchIndices<'a, P> {
+    RevSearchIndices::new(haystack, needle)
 }
-impl<'a, 'b> SearchIndices2<'a, 'b> {
-    fn new (a_haystack: &'a str, a_needle: &'b str) -> SearchIndices2<'a, 'b> {
-        SearchIndices2 {
-            curr_idx: 0,
-            haystack: a_haystack,
-            needle: a_needle,
-        }
-    }
-}
-impl<'a, 'b> Iterator for SearchIndices2<'a, 'b> {
-    type Item = (usize, &'a str);
-    #[inline(always)]
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.needle.search_in(&self.haystack[self.curr_idx..]) {
-            Some(idx) => {
-                self.curr_idx += idx;
-                let st = self.curr_idx;
-                let ed = st + self.needle.len();
-                self.curr_idx = ed;
-                Some((st, &self.haystack[st..ed]))
-            },
-            None => None
-        }
-    }
-}
-*/
 
 //
 // Only UTF-8 character sequence are used in the rust.
@@ -295,6 +401,34 @@ fn naive_opt_mc_last(haystack: &str, needle: &str) -> Option<usize> {
         return None;
     }
     for m in memchr::memchr_iter(last_byte, &hay_bytes[last_idx..]) {
+        let st = m;
+        let ed = st + nee_len;
+        if ed > hay_len {
+            break;
+        }
+        if nee_bytes == &hay_bytes[st..ed] {
+            return Some(st);
+        }
+    }
+    None
+}
+
+#[inline(always)]
+fn naive_opt_mc_last_rev(haystack: &str, needle: &str) -> Option<usize> {
+    let hay_bytes = haystack.as_bytes();
+    let nee_bytes = needle.as_bytes();
+    let hay_len = hay_bytes.len();
+    let nee_len = nee_bytes.len();
+    //
+    if nee_len == 0 {
+        return Some(hay_len);
+    }
+    let last_idx = nee_len - 1;
+    let last_byte = nee_bytes[last_idx];
+    if hay_len <= last_idx {
+        return None;
+    }
+    for m in memchr::memrchr_iter(last_byte, &hay_bytes[last_idx..]) {
         let st = m;
         let ed = st + nee_len;
         if ed > hay_len {
