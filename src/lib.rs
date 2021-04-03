@@ -177,7 +177,7 @@ pub struct SearchIndices<'a, P: SearchIn<'a>> {
     needle: P,
 }
 impl<'a, P: SearchIn<'a>> SearchIndices<'a, P> {
-    fn new (a_haystack: &'a str, a_needle: P) -> SearchIndices<'a, P> {
+    fn new(a_haystack: &'a str, a_needle: P) -> SearchIndices<'a, P> {
         SearchIndices {
             curr_idx: 0,
             haystack: a_haystack,
@@ -196,8 +196,8 @@ impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
                 let ed = st + self.needle.len();
                 self.curr_idx = ed;
                 Some((st, &self.haystack[st..ed]))
-            },
-            None => None
+            }
+            None => None,
         }
     }
 }
@@ -211,7 +211,7 @@ pub struct RevSearchIndices<'a, P: SearchIn<'a>> {
     needle: P,
 }
 impl<'a, P: SearchIn<'a>> RevSearchIndices<'a, P> {
-    fn new (a_haystack: &'a str, a_needle: P) -> RevSearchIndices<'a, P> {
+    fn new(a_haystack: &'a str, a_needle: P) -> RevSearchIndices<'a, P> {
         RevSearchIndices {
             curr_ed: a_haystack.len(),
             haystack: a_haystack,
@@ -229,8 +229,8 @@ impl<'a, P: SearchIn<'a>> Iterator for RevSearchIndices<'a, P> {
                 let ed = st + self.needle.len();
                 self.curr_ed = st;
                 Some((st, &self.haystack[st..ed]))
-            },
-            None => None
+            }
+            None => None,
         }
     }
 }
@@ -258,6 +258,12 @@ pub trait SearchIn<'a>: Sized {
     ///
     fn len(&self) -> usize;
     ///
+    /// true if a length of 0.
+    ///
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+    ///
     /// includes self in the haystack.
     ///
     /// returns true if the given pattern matches a sub-slice of this string slice.
@@ -265,7 +271,7 @@ pub trait SearchIn<'a>: Sized {
     ///
     #[inline]
     fn includes_in(&self, haystack: &'a str) -> bool {
-        !self.search_in(haystack).is_none()
+        self.search_in(haystack).is_some()
     }
 }
 impl<'a, 'b> SearchIn<'a> for &'b str {
@@ -347,7 +353,10 @@ pub fn string_rsearch(haystack: &str, needle: &str) -> Option<usize> {
 /// assert_eq!(v, [(0, "aba")]); // only the first `aba`
 /// ```
 ///
-pub fn string_search_indices<'a, P: SearchIn<'a>>(haystack: &'a str, needle: P) -> SearchIndices<'a, P> {
+pub fn string_search_indices<'a, P: SearchIn<'a>>(
+    haystack: &'a str,
+    needle: P,
+) -> SearchIndices<'a, P> {
     SearchIndices::new(haystack, needle)
 }
 
@@ -369,7 +378,10 @@ pub fn string_search_indices<'a, P: SearchIn<'a>>(haystack: &'a str, needle: P) 
 /// assert_eq!(v, [(2, "aba")]); // only the last `aba`
 /// ```
 ///
-pub fn string_rsearch_indices<'a, P: SearchIn<'a>>(haystack: &'a str, needle: P) -> RevSearchIndices<'a, P> {
+pub fn string_rsearch_indices<'a, P: SearchIn<'a>>(
+    haystack: &'a str,
+    needle: P,
+) -> RevSearchIndices<'a, P> {
     RevSearchIndices::new(haystack, needle)
 }
 

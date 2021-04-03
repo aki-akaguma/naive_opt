@@ -16,7 +16,7 @@ However, the method names are different, so please rewrite your code.
 It shouldn't be too difficult.
 
 compatibility:
-|:-----------------------------|:---------------------------------------|
+
 | rust `std::str`              | this crate                             |
 |:-----------------------------|:---------------------------------------|
 | `std::str::find()`           | `naive_opt::Search::search()`          |
@@ -111,6 +111,6 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 
 ## References
 
-[my research: string searching algorithm](https://github.com/aki-akaguma/cmp_string_searching_algorithm)
-[my research: string find](https://github.com/aki-akaguma/cmp_string_find)
-[wikipedia: string searching algprithm](https://en.wikipedia.org/wiki/String-searching_algorithm)
+- [my research: string searching algorithm](https://github.com/aki-akaguma/cmp_string_searching_algorithm)
+- [my research: string find](https://github.com/aki-akaguma/cmp_string_find)
+- [wikipedia: string searching algprithm](https://en.wikipedia.org/wiki/String-searching_algorithm)

@@ -348,7 +348,11 @@ mod std_from_test_std {
         let string = "Việt Namacbaabcaabaaba";
         for (i, ci) in string.char_indices() {
             let ip = i + ci.len_utf8();
-            for j in string[ip..].char_indices().map(|(i, _)| i).chain(Some(string.len() - ip)) {
+            for j in string[ip..]
+                .char_indices()
+                .map(|(i, _)| i)
+                .chain(Some(string.len() - ip))
+            {
                 let pat = &string[i..ip + j];
                 assert!(match string.search(pat) {
                     None => false,

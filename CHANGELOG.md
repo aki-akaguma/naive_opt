@@ -2,6 +2,12 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.6 (2021-04-04)
+=====
+
+* clippy fix
+* add trait SearchIn.is_empty()
+
 0.1.5 (2021-03-20)
 =====
 
