@@ -493,14 +493,18 @@ mod iter {
     impl<'a> Memchr<'a> {
         #[inline]
         pub fn new(needle: u8, haystack: &[u8]) -> Memchr {
-            Memchr { needle: needle, haystack: haystack, position: 0 }
+            Memchr {
+                needle: needle,
+                haystack: haystack,
+                position: 0,
+            }
         }
     }
     impl<'a> Iterator for Memchr<'a> {
         type Item = usize;
         #[inline]
         fn next(&mut self) -> Option<usize> {
-            memchr(self.needle, self.haystack).map(move |idx|{
+            memchr(self.needle, self.haystack).map(move |idx| {
                 self.haystack = self.haystack.split_at(idx + 1).1;
                 let found = self.position + idx;
                 self.position = found + 1;
@@ -521,8 +525,8 @@ mod iter {
             })
         }
     }
-    // naive algorithm
     /*
+    // naive algorithm
     fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
         haystack.iter().position(|&b| b == n1)
     }

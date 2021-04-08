@@ -2,8 +2,11 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.7 (2021-04-09)
+=====
+
 * add output2() into `task shape_benchmark_results`
-* add libc support for !x86_64
+* add libc support for 'cfg(not(target_arch = "x86_64"))'
 
 0.1.6 (2021-04-04)
 =====

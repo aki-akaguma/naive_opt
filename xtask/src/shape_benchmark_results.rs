@@ -44,10 +44,7 @@ pub fn run(_program: &str, _args: &[&str]) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn output2(
-    bench_vec_1: Vec<BenchStr>,
-    bench_vec_2: Vec<BenchStr>,
-) -> anyhow::Result<()> {
+fn output2(bench_vec_1: Vec<BenchStr>, bench_vec_2: Vec<BenchStr>) -> anyhow::Result<()> {
     println!(
         "| {:^23} | {:^11} | {:^11} |",
         "`name`", "`bench:en`", "`bench:ja`"
