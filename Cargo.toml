@@ -14,13 +14,12 @@ repository = "https://github.com/aki-akaguma/naive_opt"
 default = []
 
 [dependencies]
-memchr = "2.3"      # sse2
 
 [target.'cfg(target_arch = "x86_64")'.dependencies]
-libc = "0.2"        # memchr() for aarch64
+memchr = "2.3"      # sse2
 
-[target.'cfg(target_arch = "aarch64")'.dependencies]
-libc = "0.2"        # memchr() for aarch64
+[target.'cfg(not(target_arch = "x86_64"))'.dependencies]
+libc = "0.2"        # memchr() for aarch64, ppc64le
 
 [dev-dependencies]
 criterion = "0.3"
