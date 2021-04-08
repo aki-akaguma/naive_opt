@@ -2,6 +2,8 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* add output2() into `task shape_benchmark_results`
+
 0.1.6 (2021-04-04)
 =====
 
