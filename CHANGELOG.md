@@ -3,6 +3,7 @@ TBD
 Unreleased changes. Release notes have not yet been written.
 
 * add output2() into `task shape_benchmark_results`
+* add libc support for !x86_64
 
 0.1.6 (2021-04-04)
 =====

@@ -286,6 +286,7 @@ name = "naive_opt"
 version = "0.1.6"
 dependencies = [
  "criterion",
+ "libc",
  "memchr",
 ]
 
