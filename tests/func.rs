@@ -2,11 +2,15 @@ macro_rules! search_test {
     ($haystack:expr, $needle:expr, $result:expr) => {
         let r = string_search($haystack, $needle);
         assert_eq!(r, $result);
+        let r = string_search_bytes($haystack.as_bytes(), $needle.as_bytes());
+        assert_eq!(r, $result);
     };
 }
 macro_rules! rsearch_test {
     ($haystack:expr, $needle:expr, $result:expr) => {
         let r = string_rsearch($haystack, $needle);
+        assert_eq!(r, $result);
+        let r = string_rsearch_bytes($haystack.as_bytes(), $needle.as_bytes());
         assert_eq!(r, $result);
     };
 }
@@ -14,6 +18,7 @@ macro_rules! rsearch_test {
 #[cfg(test)]
 mod func_str_str {
     use naive_opt::string_search;
+    use naive_opt::string_search_bytes;
     #[test]
     fn test_empty_needle() {
         search_test!("", "", Some(0)); // ***
@@ -62,6 +67,7 @@ mod func_str_str {
 #[cfg(test)]
 mod func_str_string {
     use naive_opt::string_search;
+    use naive_opt::string_search_bytes;
     #[test]
     fn test_empty_needle() {
         search_test!("", &"".to_string(), Some(0)); // ***
@@ -110,6 +116,7 @@ mod func_str_string {
 #[cfg(test)]
 mod func_string_str {
     use naive_opt::string_search;
+    use naive_opt::string_search_bytes;
     #[test]
     fn test_empty_needle() {
         search_test!(&"".to_string(), "", Some(0)); // ***
@@ -158,6 +165,7 @@ mod func_string_str {
 #[cfg(test)]
 mod func_string_string {
     use naive_opt::string_search;
+    use naive_opt::string_search_bytes;
     #[test]
     fn test_empty_needle() {
         search_test!(&"".to_string(), &"".to_string(), Some(0)); // ***
@@ -206,6 +214,7 @@ mod func_string_string {
 #[cfg(test)]
 mod func_str_str_rev {
     use naive_opt::string_rsearch;
+    use naive_opt::string_rsearch_bytes;
     #[test]
     fn test_empty_needle() {
         rsearch_test!("", "", Some(0)); // ***
@@ -254,6 +263,7 @@ mod func_str_str_rev {
 #[cfg(test)]
 mod func_search_indices {
     use naive_opt::string_search_indices;
+    use naive_opt::string_search_indices_bytes;
     #[test]
     fn test_search_indices_0() {
         let haystack = "111 a 111b";
@@ -267,11 +277,25 @@ mod func_search_indices {
         assert_eq!(m.next(), Some((8, "1")));
         assert_eq!(m.next(), None);
     }
+    #[test]
+    fn test_search_indices_bytes_0() {
+        let haystack = "111 a 111b".as_bytes();
+        let needle = "1".as_bytes();
+        let mut m = string_search_indices_bytes(haystack, needle);
+        assert_eq!(m.next(), Some((0, "1".as_bytes())));
+        assert_eq!(m.next(), Some((1, "1".as_bytes())));
+        assert_eq!(m.next(), Some((2, "1".as_bytes())));
+        assert_eq!(m.next(), Some((6, "1".as_bytes())));
+        assert_eq!(m.next(), Some((7, "1".as_bytes())));
+        assert_eq!(m.next(), Some((8, "1".as_bytes())));
+        assert_eq!(m.next(), None);
+    }
 }
 
 #[cfg(test)]
 mod func_rsearch_indices {
     use naive_opt::string_rsearch_indices;
+    use naive_opt::string_rsearch_indices_bytes;
     #[test]
     fn test_rsearch_indices_0() {
         let haystack = "111 a 111b";
@@ -283,6 +307,19 @@ mod func_rsearch_indices {
         assert_eq!(m.next(), Some((2, "1")));
         assert_eq!(m.next(), Some((1, "1")));
         assert_eq!(m.next(), Some((0, "1")));
+        assert_eq!(m.next(), None);
+    }
+    #[test]
+    fn test_rsearch_indices_bytes_0() {
+        let haystack = "111 a 111b".as_bytes();
+        let needle = "1".as_bytes();
+        let mut m = string_rsearch_indices_bytes(haystack, needle);
+        assert_eq!(m.next(), Some((8, "1".as_bytes())));
+        assert_eq!(m.next(), Some((7, "1".as_bytes())));
+        assert_eq!(m.next(), Some((6, "1".as_bytes())));
+        assert_eq!(m.next(), Some((2, "1".as_bytes())));
+        assert_eq!(m.next(), Some((1, "1".as_bytes())));
+        assert_eq!(m.next(), Some((0, "1".as_bytes())));
         assert_eq!(m.next(), None);
     }
 }

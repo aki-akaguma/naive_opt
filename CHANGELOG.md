@@ -2,6 +2,11 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.8 (2021-04-20)
+=====
+
+* add xxx_bytes()
+
 0.1.7 (2021-04-09)
 =====
 

@@ -168,6 +168,80 @@ impl<'c> Search for String {
     }
 }
 
+pub trait SearchBytes {
+    fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize>;
+    fn rsearch_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize>;
+    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P>;
+    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P>;
+    fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool;
+}
+impl<'c> SearchBytes for &'c [u8] {
+    #[inline]
+    fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in(self)
+    }
+    #[inline]
+    fn rsearch_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in(self)
+    }
+    #[inline]
+    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P> {
+        SearchIndicesBytes::new(self, needle)
+    }
+    #[inline]
+    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P> {
+        RevSearchIndicesBytes::new(self, needle)
+    }
+    #[inline]
+    fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in(self)
+    }
+}
+impl<'c> SearchBytes for &'c str {
+    #[inline]
+    fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in(self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in(self.as_bytes())
+    }
+    #[inline]
+    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P> {
+        SearchIndicesBytes::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P> {
+        RevSearchIndicesBytes::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in(self.as_bytes())
+    }
+}
+impl<'c> SearchBytes for String {
+    #[inline]
+    fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in(self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in(self.as_bytes())
+    }
+    #[inline]
+    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P> {
+        SearchIndicesBytes::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P> {
+        RevSearchIndicesBytes::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in(self.as_bytes())
+    }
+}
+
 ///
 /// Created with the method [Search::search_indices()].
 ///
@@ -202,6 +276,37 @@ impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
     }
 }
 
+pub struct SearchIndicesBytes<'a, P: SearchInBytes<'a>> {
+    curr_idx: usize,
+    haystack: &'a [u8],
+    needle: P,
+}
+impl<'a, P: SearchInBytes<'a>> SearchIndicesBytes<'a, P> {
+    fn new(a_haystack: &'a [u8], a_needle: P) -> SearchIndicesBytes<'a, P> {
+        SearchIndicesBytes {
+            curr_idx: 0,
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchInBytes<'a>> Iterator for SearchIndicesBytes<'a, P> {
+    type Item = (usize, &'a [u8]);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.search_in(&self.haystack[self.curr_idx..]) {
+            Some(idx) => {
+                self.curr_idx += idx;
+                let st = self.curr_idx;
+                let ed = st + self.needle.len();
+                self.curr_idx = ed;
+                Some((st, &self.haystack[st..ed]))
+            }
+            None => None,
+        }
+    }
+}
+
 ///
 /// Created with the method [Search::rsearch_indices()].
 ///
@@ -221,6 +326,36 @@ impl<'a, P: SearchIn<'a>> RevSearchIndices<'a, P> {
 }
 impl<'a, P: SearchIn<'a>> Iterator for RevSearchIndices<'a, P> {
     type Item = (usize, &'a str);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.rsearch_in(&self.haystack[0..self.curr_ed]) {
+            Some(idx) => {
+                let st = idx;
+                let ed = st + self.needle.len();
+                self.curr_ed = st;
+                Some((st, &self.haystack[st..ed]))
+            }
+            None => None,
+        }
+    }
+}
+
+pub struct RevSearchIndicesBytes<'a, P: SearchInBytes<'a>> {
+    curr_ed: usize,
+    haystack: &'a [u8],
+    needle: P,
+}
+impl<'a, P: SearchInBytes<'a>> RevSearchIndicesBytes<'a, P> {
+    fn new(a_haystack: &'a [u8], a_needle: P) -> RevSearchIndicesBytes<'a, P> {
+        RevSearchIndicesBytes {
+            curr_ed: a_haystack.len(),
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchInBytes<'a>> Iterator for RevSearchIndicesBytes<'a, P> {
+    type Item = (usize, &'a [u8]);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
         match self.needle.rsearch_in(&self.haystack[0..self.curr_ed]) {
@@ -317,6 +452,79 @@ impl<'a, 'b> SearchIn<'a> for char {
     }
 }
 
+pub trait SearchInBytes<'a>: Sized {
+    fn search_in(&self, haystack: &'a [u8]) -> Option<usize>;
+    fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize>;
+    fn len(&self) -> usize;
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+    #[inline]
+    fn includes_in(&self, haystack: &'a [u8]) -> bool {
+        self.search_in(haystack).is_some()
+    }
+}
+impl<'a, 'b> SearchInBytes<'a> for &'b [u8] {
+    #[inline]
+    fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_bytes(haystack, self)
+    }
+    #[inline]
+    fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_rev_bytes(haystack, self)
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        u8_len(self)
+    }
+}
+#[inline(always)]
+fn u8_len(a: &[u8]) -> usize {
+    a.len()
+}
+impl<'a, 'b> SearchInBytes<'a> for &'b str {
+    #[inline]
+    fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_bytes(haystack, self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_rev_bytes(haystack, self.as_bytes())
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        self.as_bytes().len()
+    }
+}
+impl<'a, 'b> SearchInBytes<'a> for &'b String {
+    #[inline]
+    fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_bytes(haystack, self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_rev_bytes(haystack, self.as_bytes())
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        self.as_str().len()
+    }
+}
+impl<'a, 'b> SearchInBytes<'a> for char {
+    #[inline]
+    fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_bytes(haystack, self.to_string().as_bytes())
+    }
+    #[inline]
+    fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_last_rev_bytes(haystack, self.to_string().as_bytes())
+    }
+    #[inline]
+    fn len(&self) -> usize {
+        self.to_string().as_bytes().len()
+    }
+}
+
 ///
 /// search the needle in the haystack
 ///
@@ -333,6 +541,24 @@ pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
 ///
 pub fn string_rsearch(haystack: &str, needle: &str) -> Option<usize> {
     naive_opt_mc_last_rev(haystack, needle)
+}
+
+///
+/// search the needle in the haystack bytes
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_search_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    naive_opt_mc_last_bytes(haystack, needle)
+}
+
+///
+/// reverse search the needle in the haystack bytes
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_rsearch_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    naive_opt_mc_last_rev_bytes(haystack, needle)
 }
 
 ///
@@ -360,6 +586,13 @@ pub fn string_search_indices<'a, P: SearchIn<'a>>(
     SearchIndices::new(haystack, needle)
 }
 
+pub fn string_search_indices_bytes<'a, P: SearchInBytes<'a>>(
+    haystack: &'a [u8],
+    needle: P,
+) -> SearchIndicesBytes<'a, P> {
+    SearchIndicesBytes::new(haystack, needle)
+}
+
 ///
 /// An reverse search iterator over the matches of the needle in the haystack.
 ///
@@ -385,6 +618,13 @@ pub fn string_rsearch_indices<'a, P: SearchIn<'a>>(
     RevSearchIndices::new(haystack, needle)
 }
 
+pub fn string_rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(
+    haystack: &'a [u8],
+    needle: P,
+) -> RevSearchIndicesBytes<'a, P> {
+    RevSearchIndicesBytes::new(haystack, needle)
+}
+
 //
 // Only UTF-8 character sequence are used in the rust.
 //
@@ -399,8 +639,11 @@ pub fn string_rsearch_indices<'a, P: SearchIn<'a>>(
 //
 #[inline(always)]
 fn naive_opt_mc_last(haystack: &str, needle: &str) -> Option<usize> {
-    let hay_bytes = haystack.as_bytes();
-    let nee_bytes = needle.as_bytes();
+    naive_opt_mc_last_bytes(haystack.as_bytes(), needle.as_bytes())
+}
+
+#[inline(always)]
+fn naive_opt_mc_last_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     let hay_len = hay_bytes.len();
     let nee_len = nee_bytes.len();
     //
@@ -427,8 +670,10 @@ fn naive_opt_mc_last(haystack: &str, needle: &str) -> Option<usize> {
 
 #[inline(always)]
 fn naive_opt_mc_last_rev(haystack: &str, needle: &str) -> Option<usize> {
-    let hay_bytes = haystack.as_bytes();
-    let nee_bytes = needle.as_bytes();
+    naive_opt_mc_last_rev_bytes(haystack.as_bytes(), needle.as_bytes())
+}
+#[inline(always)]
+fn naive_opt_mc_last_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     let hay_len = hay_bytes.len();
     let nee_len = nee_bytes.len();
     //

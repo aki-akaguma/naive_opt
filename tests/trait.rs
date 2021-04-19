@@ -2,11 +2,15 @@ macro_rules! search_test {
     ($haystack:expr, $needle:expr, $result:expr) => {
         let r = $haystack.search($needle);
         assert_eq!(r, $result);
+        let r = $haystack.as_bytes().search_bytes($needle.as_bytes());
+        assert_eq!(r, $result);
     };
 }
 macro_rules! rsearch_test {
     ($haystack:expr, $needle:expr, $result:expr) => {
         let r = $haystack.rsearch($needle);
+        assert_eq!(r, $result);
+        let r = $haystack.as_bytes().rsearch_bytes($needle.as_bytes());
         assert_eq!(r, $result);
     };
 }
@@ -14,6 +18,7 @@ macro_rules! rsearch_test {
 #[cfg(test)]
 mod trait_str_str {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_empty_needle() {
         search_test!("", "", Some(0)); // ***
@@ -62,6 +67,7 @@ mod trait_str_str {
 #[cfg(test)]
 mod trait_str_string {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_empty_needle() {
         search_test!("", &"".to_string(), Some(0)); // ***
@@ -110,6 +116,7 @@ mod trait_str_string {
 #[cfg(test)]
 mod trait_string_str {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_empty_needle() {
         search_test!(&"".to_string(), "", Some(0)); // ***
@@ -158,6 +165,7 @@ mod trait_string_str {
 #[cfg(test)]
 mod trait_string_string {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_empty_needle() {
         search_test!(&"".to_string(), &"".to_string(), Some(0)); // ***
@@ -206,6 +214,7 @@ mod trait_string_string {
 #[cfg(test)]
 mod trait_str_str_rev {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_empty_needle() {
         rsearch_test!("", "", Some(0)); // ***
@@ -254,6 +263,7 @@ mod trait_str_str_rev {
 #[cfg(test)]
 mod trai_search_indices {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_search_indices_0() {
         let haystack = "111 a 111b";
@@ -267,11 +277,25 @@ mod trai_search_indices {
         assert_eq!(m.next(), Some((8, "1")));
         assert_eq!(m.next(), None);
     }
+    #[test]
+    fn test_search_indices_bytes_0() {
+        let haystack = "111 a 111b".as_bytes();
+        let needle = "1".as_bytes();
+        let mut m = haystack.search_indices_bytes(needle);
+        assert_eq!(m.next(), Some((0, "1".as_bytes())));
+        assert_eq!(m.next(), Some((1, "1".as_bytes())));
+        assert_eq!(m.next(), Some((2, "1".as_bytes())));
+        assert_eq!(m.next(), Some((6, "1".as_bytes())));
+        assert_eq!(m.next(), Some((7, "1".as_bytes())));
+        assert_eq!(m.next(), Some((8, "1".as_bytes())));
+        assert_eq!(m.next(), None);
+    }
 }
 
 #[cfg(test)]
 mod trai_rsearch_indices {
     use naive_opt::Search;
+    use naive_opt::SearchBytes;
     #[test]
     fn test_rsearch_indices_0() {
         let haystack = "111 a 111b";
@@ -283,6 +307,19 @@ mod trai_rsearch_indices {
         assert_eq!(m.next(), Some((2, "1")));
         assert_eq!(m.next(), Some((1, "1")));
         assert_eq!(m.next(), Some((0, "1")));
+        assert_eq!(m.next(), None);
+    }
+    #[test]
+    fn test_rsearch_indices_bytes_0() {
+        let haystack = "111 a 111b".as_bytes();
+        let needle = "1".as_bytes();
+        let mut m = haystack.rsearch_indices_bytes(needle);
+        assert_eq!(m.next(), Some((8, "1".as_bytes())));
+        assert_eq!(m.next(), Some((7, "1".as_bytes())));
+        assert_eq!(m.next(), Some((6, "1".as_bytes())));
+        assert_eq!(m.next(), Some((2, "1".as_bytes())));
+        assert_eq!(m.next(), Some((1, "1".as_bytes())));
+        assert_eq!(m.next(), Some((0, "1".as_bytes())));
         assert_eq!(m.next(), None);
     }
 }
