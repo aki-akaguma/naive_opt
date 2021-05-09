@@ -83,24 +83,39 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 
 ## Benchmark
 
+- compile by rustc 1.52.0 (88f19c6da 2021-05-03)
+
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  445.560 uc |  355.440 uc |  458.540 uc |  359.400 uc |
-| std_string_string       |  450.900 uc |  355.110 uc |  453.940 uc |  354.490 uc |
-| func_str_str            |   57.928 uc |   56.888 uc |   59.602 uc |   59.365 uc |
-| func_string_string      |   56.754 uc |   56.721 uc |   59.276 uc |   59.016 uc |
-| trait_str_str           |   50.825 uc |   49.719 uc |   52.659 uc |   52.919 uc |
-| trait_string_string     |   49.898 uc |   49.951 uc |   52.263 uc |   52.721 uc |
-| std_indices             |  349.200 uc |  269.560 uc |  373.310 uc |  267.570 uc |
-| func_indices            |   51.955 uc |   52.269 uc |   55.074 uc |   54.534 uc |
-| trait_indices           |   52.235 uc |   52.201 uc |   54.549 uc |   54.589 uc |
+| std_str_str             |  228.500 uc |  177.770 uc |  232.990 uc |  176.730 uc |
+| std_string_string       |  223.760 uc |  178.780 uc |  228.410 uc |  175.880 uc |
+| func_str_str            |   29.561 uc |   29.222 uc |   30.636 uc |   30.412 uc |
+| func_string_string      |   29.315 uc |   29.102 uc |   30.422 uc |   30.371 uc |
+| trait_str_str           |   25.365 uc |   25.036 uc |   26.210 uc |   26.271 uc |
+| trait_string_string     |   25.131 uc |   24.814 uc |   26.350 uc |   26.443 uc |
+| std_indices             |  173.250 uc |  126.650 uc |  169.970 uc |  131.070 uc |
+| func_indices            |   26.060 uc |   26.094 uc |   27.181 uc |   27.331 uc |
+| trait_indices           |   26.083 uc |   26.097 uc |   27.223 uc |   27.366 uc |
+
+- compile by rustc 1.41.1 (f3e1a954d 2020-02-24)
+
+|         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
+|:------------------------|------------:|------------:|------------:|------------:|
+| std_str_str             |  207.280 uc |  172.180 uc |  208.830 uc |  164.940 uc |
+| std_string_string       |  207.220 uc |  174.360 uc |  205.340 uc |  167.410 uc |
+| func_str_str            |   28.212 uc |   28.243 uc |   29.534 uc |   29.582 uc |
+| func_string_string      |   28.173 uc |   28.329 uc |   29.939 uc |   29.576 uc |
+| trait_str_str           |   24.888 uc |   24.896 uc |   26.374 uc |   26.272 uc |
+| trait_string_string     |   25.642 uc |   25.736 uc |   29.353 uc |   27.134 uc |
+| std_indices             |  170.070 uc |  133.240 uc |  168.450 uc |  124.060 uc |
+| func_indices            |   26.352 uc |   26.372 uc |   27.931 uc |   27.951 uc |
+| trait_indices           |   26.491 uc |   26.515 uc |   28.357 uc |   28.468 uc |
 
 - std is std::str::find()
 - `us` is micro seconds
 - `:en` is english haystack.
 - `:ja` is japanese haystack.
 - `musl` is x86_64-unknown-linux-musl
-- compile by rustc 1.50.0 (cb75ad5db 2021-02-10)
 - bench on intel Q6600 @ 2.40GHz
 
 

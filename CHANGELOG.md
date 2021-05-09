@@ -2,6 +2,12 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.9 (2021-05-09)
+=====
+
+* update depends: memchr(2.4.0)
+* split into fallback.rs
+
 0.1.8 (2021-04-20)
 =====
 

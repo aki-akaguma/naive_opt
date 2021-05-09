@@ -1,6 +1,6 @@
 [package]
 name = "naive_opt"
-version = "0.1.8"
+version = "0.1.9"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 edition = "2018"
 description = "The optimized naive string-search algorithm."
@@ -15,11 +15,11 @@ default = []
 
 [dependencies]
 
-[target.'cfg(target_arch = "x86_64")'.dependencies]
-memchr = "2.3"      # sse2
+[target.'cfg(any(target_arch = "x86_64",target_arch = "x86"))'.dependencies]
+memchr = "=2.4"     # sse2
 
-[target.'cfg(not(target_arch = "x86_64"))'.dependencies]
-libc = "0.2"        # memchr() for aarch64, ppc64le
+[target.'cfg(not(any(target_arch = "x86_64",target_arch = "x86")))'.dependencies]
+libc = "=0.2"       # memchr() for aarch64, ppc64le
 
 [dev-dependencies]
 criterion = "0.3"
