@@ -324,6 +324,19 @@ mod trai_rsearch_indices {
     }
 }
 
+#[cfg(test)]
+mod func_str_str_large {
+    use naive_opt::Search;
+    use naive_opt::SearchBytes;
+    #[test]
+    fn test_large_needle_found() {
+        let haystack = "c11 a 111b12345678901234567890";
+        let needle = "12345678901234567890";
+        search_test!(haystack, needle, Some(10));
+        rsearch_test!(haystack, needle, Some(10));
+    }
+}
+
 //
 // a copy from tests of the rust std::str
 //

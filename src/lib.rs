@@ -171,8 +171,12 @@ impl<'c> Search for String {
 pub trait SearchBytes {
     fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize>;
     fn rsearch_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize>;
-    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P>;
-    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P>;
+    fn search_indices_bytes<'a, P>(&'a self, needle: P) -> SearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>;
+    fn rsearch_indices_bytes<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>;
     fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool;
 }
 impl<'c> SearchBytes for &'c [u8] {
@@ -185,11 +189,17 @@ impl<'c> SearchBytes for &'c [u8] {
         needle.rsearch_in(self)
     }
     #[inline]
-    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P> {
+    fn search_indices_bytes<'a, P>(&'a self, needle: P) -> SearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
         SearchIndicesBytes::new(self, needle)
     }
     #[inline]
-    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P> {
+    fn rsearch_indices_bytes<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
         RevSearchIndicesBytes::new(self, needle)
     }
     #[inline]
@@ -207,11 +217,17 @@ impl<'c> SearchBytes for &'c str {
         needle.rsearch_in(self.as_bytes())
     }
     #[inline]
-    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P> {
+    fn search_indices_bytes<'a, P>(&'a self, needle: P) -> SearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
         SearchIndicesBytes::new(self.as_bytes(), needle)
     }
     #[inline]
-    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P> {
+    fn rsearch_indices_bytes<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
         RevSearchIndicesBytes::new(self.as_bytes(), needle)
     }
     #[inline]
@@ -229,11 +245,17 @@ impl<'c> SearchBytes for String {
         needle.rsearch_in(self.as_bytes())
     }
     #[inline]
-    fn search_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> SearchIndicesBytes<'a, P> {
+    fn search_indices_bytes<'a, P>(&'a self, needle: P) -> SearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
         SearchIndicesBytes::new(self.as_bytes(), needle)
     }
     #[inline]
-    fn rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P> {
+    fn rsearch_indices_bytes<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytes<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
         RevSearchIndicesBytes::new(self.as_bytes(), needle)
     }
     #[inline]
@@ -698,7 +720,7 @@ fn naive_opt_mc_last_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usi
     None
 }
 
-#[cfg(any(target_arch = "x86_64",target_arch = "x86"))]
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
 mod my {
     #[inline(always)]
     pub fn memchr_iter(needle: u8, haystack: &[u8]) -> memchr::Memchr {
@@ -710,7 +732,7 @@ mod my {
     }
 }
 
-#[cfg(not(any(target_arch = "x86_64",target_arch = "x86")))]
+#[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
 mod my {
     #[inline(always)]
     pub fn memchr_iter(needle: u8, haystack: &[u8]) -> super::fallback::Memchr {
@@ -722,5 +744,5 @@ mod my {
     }
 }
 
-#[cfg(not(any(target_arch = "x86_64",target_arch = "x86")))]
+#[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
 mod fallback;

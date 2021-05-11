@@ -2,6 +2,9 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* replace new bench data: a match size is more than old.
+* add to test: a needle large size.
+
 0.1.9 (2021-05-09)
 =====
 
