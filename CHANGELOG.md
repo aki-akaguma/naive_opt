@@ -2,8 +2,13 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.10 (2021-06-03)
+=====
+
 * replace new bench data: a match size is more than old.
 * add to test: a needle large size.
+* add crate memx into depends.
+* remove crate libc and crate memchr.
 
 0.1.9 (2021-05-09)
 =====

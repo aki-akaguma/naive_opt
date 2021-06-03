@@ -2,8 +2,8 @@ use anyhow::Context;
 use std::io::BufRead;
 
 pub fn run(_program: &str, _args: &[&str]) -> anyhow::Result<()> {
-    let bench_vec_1 = get_bench("z.bench.en.1.log")?;
-    let mut bench_vec_2 = get_bench("z.bench.ja.1.log")?;
+    let bench_vec_1 = get_bench("z.gnu.bench.en.1.log")?;
+    let mut bench_vec_2 = get_bench("z.gnu.bench.ja.1.log")?;
     let mut bench_vec_3 = {
         let r = get_bench("z.musl.bench.en.1.log");
         if r.is_err() {

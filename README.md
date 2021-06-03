@@ -83,33 +83,19 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 
 ## Benchmark
 
-- compile by rustc 1.52.0 (88f19c6da 2021-05-03)
+- compile by rustc 1.52.1 (9bc8c42bb 2021-05-09)
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  541.680 uc |  520.740 uc |  555.300 uc |  511.630 uc |
-| std_string_string       |  540.130 uc |  517.280 uc |  556.200 uc |  508.900 uc |
-| func_str_str            |  121.840 uc |  130.300 uc |  113.910 uc |  113.900 uc |
-| func_string_string      |  121.000 uc |  129.540 uc |  113.740 uc |  109.830 uc |
-| trait_str_str           |  118.850 uc |  123.410 uc |  111.720 uc |  105.280 uc |
-| trait_string_string     |  120.660 uc |  118.760 uc |  112.090 uc |  108.290 uc |
-| std_indices             |  466.430 uc |  397.850 uc |  475.890 uc |  398.430 uc |
-| func_indices            |  115.710 uc |  119.230 uc |  113.610 uc |  109.420 uc |
-| trait_indices           |  118.760 uc |  118.760 uc |  114.140 uc |  109.550 uc |
-
-- compile by rustc 1.41.1 (f3e1a954d 2020-02-24)
-
-|         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
-|:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  513.550 uc |  475.900 uc |  493.000 uc |  474.140 uc |
-| std_string_string       |  509.330 uc |  472.820 uc |  493.370 uc |  479.790 uc |
-| func_str_str            |  132.100 uc |  131.870 uc |  106.010 uc |  109.170 uc |
-| func_string_string      |  128.180 uc |  131.710 uc |  111.030 uc |  105.800 uc |
-| trait_str_str           |  128.020 uc |  124.220 uc |  104.610 uc |  105.830 uc |
-| trait_string_string     |  123.580 uc |  125.900 uc |  103.350 uc |  110.630 uc |
-| std_indices             |  448.560 uc |  407.380 uc |  427.750 uc |  415.310 uc |
-| func_indices            |  121.280 uc |  121.210 uc |  112.230 uc |  112.480 uc |
-| trait_indices           |  123.160 uc |  121.350 uc |  113.720 uc |  111.870 uc |
+| std_str_str             |  539.660 uc |  478.930 uc |  524.480 uc |  479.960 uc |
+| std_string_string       |  534.660 uc |  481.690 uc |  525.550 uc |  470.390 uc |
+| func_str_str            |  104.010 uc |  103.600 uc |  106.680 uc |  104.950 uc |
+| func_string_string      |  103.910 uc |  104.140 uc |  106.180 uc |  105.840 uc |
+| trait_str_str           |   97.082 uc |   96.958 uc |   98.712 uc |   97.831 uc |
+| trait_string_string     |   96.175 uc |   96.488 uc |   99.185 uc |   99.046 uc |
+| std_indices             |  457.130 uc |  409.460 uc |  459.220 uc |  405.300 uc |
+| func_indices            |  104.190 uc |  120.680 uc |  103.010 uc |  122.950 uc |
+| trait_indices           |  103.770 uc |  120.560 uc |  103.290 uc |  122.650 uc |
 
 - std is std::str::find()
 - `us` is micro seconds

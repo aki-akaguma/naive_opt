@@ -677,13 +677,14 @@ fn naive_opt_mc_last_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> 
     if hay_len <= last_idx {
         return None;
     }
-    for m in my::memchr_iter(last_byte, &hay_bytes[last_idx..]) {
+    for m in ::memx::iter::memchr_iter(&hay_bytes[last_idx..], last_byte) {
         let st = m;
         let ed = st + nee_len;
         if ed > hay_len {
             break;
         }
-        if nee_bytes == &hay_bytes[st..ed] {
+        // if nee_bytes == &hay_bytes[st..ed] { ... }
+        if ::memx::memeq(nee_bytes, &hay_bytes[st..ed]) {
             return Some(st);
         }
     }
@@ -707,42 +708,16 @@ fn naive_opt_mc_last_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usi
     if hay_len <= last_idx {
         return None;
     }
-    for m in my::memrchr_iter(last_byte, &hay_bytes[last_idx..]) {
+    for m in ::memx::iter::memrchr_iter(&hay_bytes[last_idx..], last_byte) {
         let st = m;
         let ed = st + nee_len;
         if ed > hay_len {
             break;
         }
-        if nee_bytes == &hay_bytes[st..ed] {
+        // if nee_bytes == &hay_bytes[st..ed] { ... }
+        if ::memx::memeq(nee_bytes, &hay_bytes[st..ed]) {
             return Some(st);
         }
     }
     None
 }
-
-#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
-mod my {
-    #[inline(always)]
-    pub fn memchr_iter(needle: u8, haystack: &[u8]) -> memchr::Memchr {
-        memchr::memchr_iter(needle, haystack)
-    }
-    #[inline(always)]
-    pub fn memrchr_iter(needle: u8, haystack: &[u8]) -> core::iter::Rev<memchr::Memchr> {
-        memchr::memrchr_iter(needle, haystack)
-    }
-}
-
-#[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
-mod my {
-    #[inline(always)]
-    pub fn memchr_iter(needle: u8, haystack: &[u8]) -> super::fallback::Memchr {
-        super::fallback::memchr_iter(needle, haystack)
-    }
-    #[inline(always)]
-    pub fn memrchr_iter(needle: u8, haystack: &[u8]) -> core::iter::Rev<super::fallback::Memchr> {
-        super::fallback::memrchr_iter(needle, haystack)
-    }
-}
-
-#[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
-mod fallback;
