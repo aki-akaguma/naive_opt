@@ -434,11 +434,11 @@ pub trait SearchIn<'a>: Sized {
 impl<'a, 'b> SearchIn<'a> for &'b str {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_last(haystack, self)
+        naive_opt_mc_bytes(haystack.as_bytes(), self.as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_last_rev(haystack, self)
+        naive_opt_mc_rev_bytes(haystack.as_bytes(), self.as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -448,11 +448,11 @@ impl<'a, 'b> SearchIn<'a> for &'b str {
 impl<'a, 'b> SearchIn<'a> for &'b String {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_last(haystack, self.as_str())
+        naive_opt_mc_bytes(haystack.as_bytes(), self.as_str().as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_last_rev(haystack, self.as_str())
+        naive_opt_mc_rev_bytes(haystack.as_bytes(), self.as_str().as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -462,11 +462,11 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
 impl<'a, 'b> SearchIn<'a> for char {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_last(haystack, self.to_string().as_str())
+        naive_opt_mc_bytes(haystack.as_bytes(), self.to_string().as_str().as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_last_rev(haystack, self.to_string().as_str())
+        naive_opt_mc_rev_bytes(haystack.as_bytes(), self.to_string().as_str().as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -489,11 +489,11 @@ pub trait SearchInBytes<'a>: Sized {
 impl<'a, 'b> SearchInBytes<'a> for &'b [u8] {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_bytes(haystack, self)
+        naive_opt_mc_bytes(haystack, self)
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_rev_bytes(haystack, self)
+        naive_opt_mc_rev_bytes(haystack, self)
     }
     #[inline]
     fn len(&self) -> usize {
@@ -507,11 +507,11 @@ fn u8_len(a: &[u8]) -> usize {
 impl<'a, 'b> SearchInBytes<'a> for &'b str {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_bytes(haystack, self.as_bytes())
+        naive_opt_mc_bytes(haystack, self.as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_rev_bytes(haystack, self.as_bytes())
+        naive_opt_mc_rev_bytes(haystack, self.as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -521,11 +521,11 @@ impl<'a, 'b> SearchInBytes<'a> for &'b str {
 impl<'a, 'b> SearchInBytes<'a> for &'b String {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_bytes(haystack, self.as_bytes())
+        naive_opt_mc_bytes(haystack, self.as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_rev_bytes(haystack, self.as_bytes())
+        naive_opt_mc_rev_bytes(haystack, self.as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -535,11 +535,11 @@ impl<'a, 'b> SearchInBytes<'a> for &'b String {
 impl<'a, 'b> SearchInBytes<'a> for char {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_bytes(haystack, self.to_string().as_bytes())
+        naive_opt_mc_bytes(haystack, self.to_string().as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_last_rev_bytes(haystack, self.to_string().as_bytes())
+        naive_opt_mc_rev_bytes(haystack, self.to_string().as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -553,7 +553,7 @@ impl<'a, 'b> SearchInBytes<'a> for char {
 /// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
-    naive_opt_mc_last(haystack, needle)
+    naive_opt_mc_bytes(haystack.as_bytes(), needle.as_bytes())
 }
 
 ///
@@ -562,7 +562,7 @@ pub fn string_search(haystack: &str, needle: &str) -> Option<usize> {
 /// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub fn string_rsearch(haystack: &str, needle: &str) -> Option<usize> {
-    naive_opt_mc_last_rev(haystack, needle)
+    naive_opt_mc_rev_bytes(haystack.as_bytes(), needle.as_bytes())
 }
 
 ///
@@ -571,7 +571,7 @@ pub fn string_rsearch(haystack: &str, needle: &str) -> Option<usize> {
 /// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub fn string_search_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-    naive_opt_mc_last_bytes(haystack, needle)
+    naive_opt_mc_bytes(haystack, needle)
 }
 
 ///
@@ -580,7 +580,7 @@ pub fn string_search_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
 /// return index of the haystack, if it found the needle. Otherwise return None.
 ///
 pub fn string_rsearch_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-    naive_opt_mc_last_rev_bytes(haystack, needle)
+    naive_opt_mc_rev_bytes(haystack, needle)
 }
 
 ///
@@ -659,65 +659,79 @@ pub fn string_rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(
 //
 // I think it is stochastically effective to use the last byte for seaching.
 //
+// Otherwise the ASCII character are using many space code: 0x20.
+// This code do atochastics using by the 1st byte and last byte.
+//
+mod mc_1st;
+mod mc_last;
+
 #[inline(always)]
-fn naive_opt_mc_last(haystack: &str, needle: &str) -> Option<usize> {
-    naive_opt_mc_last_bytes(haystack.as_bytes(), needle.as_bytes())
+fn naive_opt_mc_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
+    #[cfg(feature = "only_mc_1st")]
+    {
+        mc_1st::naive_opt_mc_1st_bytes(hay_bytes, nee_bytes)
+    }
+    #[cfg(feature = "only_mc_last")]
+    {
+        mc_last::naive_opt_mc_last_bytes(hay_bytes, nee_bytes)
+    }
+    #[cfg(all(not(feature = "only_mc_1st"), not(feature = "only_mc_last")))]
+    {
+        if nee_bytes.len() == 0 {
+            return Some(0);
+        }
+        let byte_1st = nee_bytes[0];
+        let byte_last = nee_bytes[nee_bytes.len() - 1];
+        if byte_1st.is_ascii() && byte_last.is_ascii() {
+            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
+            let weight_last = _ASCII_STOCHAS[byte_last as usize];
+            if weight_1st <= weight_last {
+                mc_1st::naive_opt_mc_1st_bytes(hay_bytes, nee_bytes)
+            } else {
+                mc_last::naive_opt_mc_last_bytes(hay_bytes, nee_bytes)
+            }
+        } else {
+            mc_last::naive_opt_mc_last_bytes(hay_bytes, nee_bytes)
+        }
+    }
 }
 
 #[inline(always)]
-fn naive_opt_mc_last_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
-    let hay_len = hay_bytes.len();
-    let nee_len = nee_bytes.len();
-    //
-    if nee_len == 0 {
-        return Some(0);
+fn naive_opt_mc_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
+    #[cfg(feature = "only_mc_1st")]
+    {
+        mc_1st::naive_opt_mc_1st_rev_bytes(hay_bytes, nee_bytes)
     }
-    let last_idx = nee_len - 1;
-    let last_byte = nee_bytes[last_idx];
-    if hay_len <= last_idx {
-        return None;
+    #[cfg(feature = "only_mc_last")]
+    {
+        mc_last::naive_opt_mc_last_rev_bytes(hay_bytes, nee_bytes)
     }
-    for m in ::memx::iter::memchr_iter(&hay_bytes[last_idx..], last_byte) {
-        let st = m;
-        let ed = st + nee_len;
-        if ed > hay_len {
-            break;
+    #[cfg(all(not(feature = "only_mc_1st"), not(feature = "only_mc_last")))]
+    {
+        if nee_bytes.len() == 0 {
+            return Some(hay_bytes.len());
         }
-        // if nee_bytes == &hay_bytes[st..ed] { ... }
-        if ::memx::memeq(nee_bytes, &hay_bytes[st..ed]) {
-            return Some(st);
+        let byte_1st = nee_bytes[0];
+        let byte_last = nee_bytes[nee_bytes.len() - 1];
+        if byte_1st.is_ascii() && byte_last.is_ascii() {
+            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
+            let weight_last = _ASCII_STOCHAS[byte_last as usize];
+            if weight_1st <= weight_last {
+                mc_1st::naive_opt_mc_1st_rev_bytes(hay_bytes, nee_bytes)
+            } else {
+                mc_last::naive_opt_mc_last_rev_bytes(hay_bytes, nee_bytes)
+            }
+        } else {
+            mc_last::naive_opt_mc_last_rev_bytes(hay_bytes, nee_bytes)
         }
     }
-    None
 }
 
-#[inline(always)]
-fn naive_opt_mc_last_rev(haystack: &str, needle: &str) -> Option<usize> {
-    naive_opt_mc_last_rev_bytes(haystack.as_bytes(), needle.as_bytes())
-}
-#[inline(always)]
-fn naive_opt_mc_last_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
-    let hay_len = hay_bytes.len();
-    let nee_len = nee_bytes.len();
-    //
-    if nee_len == 0 {
-        return Some(hay_len);
-    }
-    let last_idx = nee_len - 1;
-    let last_byte = nee_bytes[last_idx];
-    if hay_len <= last_idx {
-        return None;
-    }
-    for m in ::memx::iter::memrchr_iter(&hay_bytes[last_idx..], last_byte) {
-        let st = m;
-        let ed = st + nee_len;
-        if ed > hay_len {
-            break;
-        }
-        // if nee_bytes == &hay_bytes[st..ed] { ... }
-        if ::memx::memeq(nee_bytes, &hay_bytes[st..ed]) {
-            return Some(st);
-        }
-    }
-    None
-}
+// ascii stochastics
+const _ASCII_STOCHAS: [u8; 128] = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    255, 0, 2, 0, 0, 0, 0, 0, 1, 1, 0, 3, 6, 14, 19, 1, 3, 4, 3, 2, 2, 1, 1, 1, 1, 1, 2, 0, 0, 1,
+    0, 0, 0, 4, 1, 5, 2, 4, 3, 0, 1, 5, 0, 0, 2, 3, 3, 2, 5, 0, 4, 6, 6, 1, 0, 0, 0, 0, 0, 1, 0, 1,
+    0, 1, 0, 39, 7, 20, 19, 69, 11, 9, 18, 39, 0, 2, 18, 12, 38, 38, 12, 1, 34, 35, 50, 13, 5, 5,
+    2, 7, 0, 0, 2, 0, 0, 0,
+];

@@ -50,3 +50,6 @@ bench.en.1-musl: target/stamp.bench-build-musl
 bench.ja.1-musl: target/stamp.bench-build-musl
 	@rm -f z.musl.bench.ja.1.log
 	env AKI_TEST_DAT=ja.1 $(TSK) cargo bench $(BENCH_STR) $(TARGET_MUSL) -- -n | tee -a z.musl.bench.ja.1.log
+
+stochastics:
+	(find ~/src/rust/rfcs/text/ -type f -name "*.md" -exec aki-xcat \{\} \; ; find ~/src/data/ietf-rfc/text/ -type f -name "*.txt.gz" -exec aki-xcat \{\} \; ) | aki-stats --map-ascii -X map-ascii-rust-src

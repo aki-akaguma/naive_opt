@@ -326,10 +326,10 @@ mod func_rsearch_indices {
 
 #[cfg(test)]
 mod func_str_str_large {
-    use naive_opt::string_search;
-    use naive_opt::string_search_bytes;
     use naive_opt::string_rsearch;
     use naive_opt::string_rsearch_bytes;
+    use naive_opt::string_search;
+    use naive_opt::string_search_bytes;
     #[test]
     fn test_large_needle_found() {
         let haystack = "c11 a 111b12345678901234567890";

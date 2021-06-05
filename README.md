@@ -6,6 +6,7 @@ The optimized naive string-search algorithm.
 * The naive string-searching algorithm
 * Enhanced with 1-byte search like the libc++ and the libstd++ string::find
 * Specializing in UTF-8 strings, which is a feature of rust
+* The ASCII Stochastics search
 * Support the zero overhead trait.
 * minimum support: rustc 1.41.1 (f3e1a954d 2020-02-24)
 
@@ -87,15 +88,15 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  539.660 uc |  478.930 uc |  524.480 uc |  479.960 uc |
-| std_string_string       |  534.660 uc |  481.690 uc |  525.550 uc |  470.390 uc |
-| func_str_str            |  104.010 uc |  103.600 uc |  106.680 uc |  104.950 uc |
-| func_string_string      |  103.910 uc |  104.140 uc |  106.180 uc |  105.840 uc |
-| trait_str_str           |   97.082 uc |   96.958 uc |   98.712 uc |   97.831 uc |
-| trait_string_string     |   96.175 uc |   96.488 uc |   99.185 uc |   99.046 uc |
-| std_indices             |  457.130 uc |  409.460 uc |  459.220 uc |  405.300 uc |
-| func_indices            |  104.190 uc |  120.680 uc |  103.010 uc |  122.950 uc |
-| trait_indices           |  103.770 uc |  120.560 uc |  103.290 uc |  122.650 uc |
+| std_str_str             |  585.580 uc |  578.320 uc |  615.830 uc |  479.560 uc |
+| std_string_string       |  585.960 uc |  535.340 uc |  617.810 uc |  489.860 uc |
+| func_str_str            |   85.994 uc |  106.520 uc |   87.228 uc |  111.430 uc |
+| func_string_string      |   85.223 uc |  104.990 uc |   86.863 uc |  111.340 uc |
+| trait_str_str           |   81.330 uc |  100.390 uc |   82.727 uc |  103.500 uc |
+| trait_string_string     |   80.777 uc |  100.920 uc |   81.788 uc |  102.520 uc |
+| std_indices             |  527.490 uc |  402.170 uc |  514.510 uc |  394.700 uc |
+| func_indices            |   81.626 uc |  101.900 uc |   82.144 uc |  104.220 uc |
+| trait_indices           |   81.608 uc |  101.920 uc |   82.037 uc |  104.050 uc |
 
 - std is std::str::find()
 - `us` is micro seconds

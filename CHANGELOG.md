@@ -2,6 +2,13 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.11 (2021-06-06)
+=====
+
+* faster ascii searching
+* add ascii stochastics
+* add naive_opt_mc_1st_bytes() and naive_opt_mc_1st_rev_bytes()
+
 0.1.10 (2021-06-03)
 =====
 

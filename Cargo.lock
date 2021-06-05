@@ -282,7 +282,7 @@ checksum = "54158ce86a09a721e172a69a0dcc1d04e30048d43af3319d1b552fd339657d4c"
 
 [[package]]
 name = "naive_opt"
-version = "0.1.10"
+version = "0.1.11"
 dependencies = [
  "criterion",
  "memx",
