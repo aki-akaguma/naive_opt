@@ -16,11 +16,15 @@ bench-gnu: bench.en.1-gnu bench.ja.1-gnu
 
 bench-musl: bench.en.1-musl bench.ja.1-musl
 
-bench-build-gnu:
+bench-build-gnu: target/stamp.bench-build-gnu
+
+target/stamp.bench-build-gnu:
 	cargo bench --no-run $(TARGET_GNU)
 	@touch target/stamp.bench-build-gnu
 
-bench-build-musl:
+bench-build-musl: target/stamp.bench-build-musl
+
+target/stamp.bench-build-musl:
 	cargo bench --no-run $(TARGET_MUSL)
 	@touch target/stamp.bench-build-musl
 

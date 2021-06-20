@@ -2,6 +2,12 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.12 (2021-06-20)
+=====
+
+* update crates: memx(0.1.12) - the important bugs fixed
+* add "Cargo.lock" into .gitignore
+
 0.1.11 (2021-06-06)
 =====
 

@@ -84,19 +84,19 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 
 ## Benchmark
 
-- compile by rustc 1.52.1 (9bc8c42bb 2021-05-09)
+- compile by rustc 1.53.0 (53cb7b09b 2021-06-17)
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  585.580 uc |  578.320 uc |  615.830 uc |  479.560 uc |
-| std_string_string       |  585.960 uc |  535.340 uc |  617.810 uc |  489.860 uc |
-| func_str_str            |   85.994 uc |  106.520 uc |   87.228 uc |  111.430 uc |
-| func_string_string      |   85.223 uc |  104.990 uc |   86.863 uc |  111.340 uc |
-| trait_str_str           |   81.330 uc |  100.390 uc |   82.727 uc |  103.500 uc |
-| trait_string_string     |   80.777 uc |  100.920 uc |   81.788 uc |  102.520 uc |
-| std_indices             |  527.490 uc |  402.170 uc |  514.510 uc |  394.700 uc |
-| func_indices            |   81.626 uc |  101.900 uc |   82.144 uc |  104.220 uc |
-| trait_indices           |   81.608 uc |  101.920 uc |   82.037 uc |  104.050 uc |
+| std_str_str             |  597.500 uc |  486.830 uc |  612.780 uc |  494.020 uc |
+| std_string_string       |  596.120 uc |  484.470 uc |  621.090 uc |  521.630 uc |
+| func_str_str            |   92.700 uc |  111.850 uc |   91.712 uc |  113.740 uc |
+| func_string_string      |   92.046 uc |  111.630 uc |   91.629 uc |  114.720 uc |
+| trait_str_str           |   86.913 uc |  107.620 uc |   86.574 uc |  108.830 uc |
+| trait_string_string     |   86.268 uc |  107.420 uc |   87.603 uc |  107.440 uc |
+| std_indices             |  537.580 uc |  403.150 uc |  530.250 uc |  405.990 uc |
+| func_indices            |   87.310 uc |  108.470 uc |   87.587 uc |  109.770 uc |
+| trait_indices           |   87.383 uc |  107.750 uc |   87.895 uc |  109.070 uc |
 
 - std is std::str::find()
 - `us` is micro seconds
@@ -116,3 +116,4 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 - [my research: string searching algorithm](https://github.com/aki-akaguma/cmp_string_searching_algorithm)
 - [my research: string find](https://github.com/aki-akaguma/cmp_string_find)
 - [wikipedia: string searching algprithm](https://en.wikipedia.org/wiki/String-searching_algorithm)
+- [`memx`](https://crates.io/crates/memx) - rust crate for the fast mem lib
