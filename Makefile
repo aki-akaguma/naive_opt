@@ -5,7 +5,21 @@ TARGET_GNU  = --target=x86_64-unknown-linux-gnu
 TARGET_MUSL = --target=x86_64-unknown-linux-musl
 TSK = taskset -c 2
 
-all:
+all: README.md
+
+README.md: README.tpl src/lib.rs
+	cargo readme > $@
+
+test:
+	cargo test
+
+test-no_std:
+	cargo test --no-default-features
+
+clean:
+	@cargo clean
+	@rm -f z.*
+
 
 bench-all: bench-gnu bench-musl
 
@@ -30,10 +44,6 @@ target/stamp.bench-build-musl:
 
 bench-clean:
 	@rm -fr target/criterion
-
-clean:
-	@cargo clean
-	@rm -f z.*
 
 report:
 	cargo xtask shape_benchmark_results

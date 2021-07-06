@@ -1,4 +1,5 @@
 # naive_opt
+
 The optimized naive string-search algorithm.
 
 ## Features
@@ -25,7 +26,6 @@ compatibility:
 | `std::str::contains()`       | `naive_opt::Search::includes()`        |
 | `std::str::match_indices()`  | `naive_opt::Search::search_indices()`  |
 | `std::str::rmatch_indices()` | `naive_opt::Search::rsearch_indices()` |
-
 
 ## Examples
 
@@ -82,7 +82,8 @@ assert_eq!("1".search_in(haystack), Some(0));
 assert_eq!("1".rsearch_in(haystack), Some(8));
 ```
 
-## Benchmark
+
+# Benchmark results
 
 - compile by rustc 1.53.0 (53cb7b09b 2021-06-17)
 
@@ -105,15 +106,24 @@ assert_eq!("1".rsearch_in(haystack), Some(8));
 - `musl` is x86_64-unknown-linux-musl
 - bench on intel Q6600 @ 2.40GHz
 
-
-## Changelogs
+# Changelogs
 
 [This crate's changelog here.](https://github.com/aki-akaguma/naive_opt/blob/main/CHANGELOG.md)
 
-
-## References
+# References
 
 - [my research: string searching algorithm](https://github.com/aki-akaguma/cmp_string_searching_algorithm)
 - [my research: string find](https://github.com/aki-akaguma/cmp_string_find)
 - [wikipedia: string searching algprithm](https://en.wikipedia.org/wiki/String-searching_algorithm)
 - [`memx`](https://crates.io/crates/memx) - rust crate for the fast mem lib
+
+# License
+
+This project is licensed under either of
+
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
+   https://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or
+   https://opensource.org/licenses/MIT)
+
+at your option.

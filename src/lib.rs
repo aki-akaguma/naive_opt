@@ -1,65 +1,87 @@
-//!
-//! The optimized naive string-search algorithm.
-//!
-//! * Enhanced with 1-byte search like the libc++ and the libstd++ string::find
-//! * Specializing in UTF-8 strings, which is a feature of rust
-//! * Support the zero overhead trait.
-//!
-//! # Examples
-//!
-//! ## Example function:
-//!
-//! ```rust
-//! use naive_opt::{string_search, string_rsearch};
-//! use naive_opt::{string_search_indices, string_rsearch_indices};
-//!
-//! let haystack = "111 a 111b";
-//! let needle = "a";
-//! let r = string_search(haystack, needle);
-//! assert_eq!(r, Some(4));
-//!
-//! assert_eq!(string_search(haystack, "1"), Some(0));
-//! assert_eq!(string_rsearch(haystack, "1"), Some(8));
-//!
-//! let v: Vec<_> = string_search_indices("abc345abc901abc", "abc").collect();
-//! assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
-//! let v: Vec<_> = string_rsearch_indices("abc345abc901abc", "abc").collect();
-//! assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
-//! ```
-//!
-//! ## Example trait: Search
-//!
-//! ```rust
-//! use naive_opt::Search;
-//!
-//! let haystack = "111 a 111b";
-//! let needle = "a";
-//! let r = haystack.search(needle);
-//! assert_eq!(r, Some(4));
-//!
-//! assert_eq!(haystack.search("1"), Some(0));
-//! assert_eq!(haystack.rsearch("1"), Some(8));
-//!
-//! let v: Vec<_> = "abc345abc901abc".search_indices("abc").collect();
-//! assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
-//! let v: Vec<_> = "abc345abc901abc".rsearch_indices("abc").collect();
-//! assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
-//! ```
-//!
-//! ## Example trait: SearchIn
-//!
-//! ```rust
-//! use naive_opt::SearchIn;
-//!
-//! let haystack = "111 a 111b";
-//! let needle = "a";
-//! let r = needle.search_in(haystack);
-//! assert_eq!(r, Some(4));
-//!
-//! assert_eq!("1".search_in(haystack), Some(0));
-//! assert_eq!("1".rsearch_in(haystack), Some(8));
-//! ```
-//!
+/*!
+The optimized naive string-search algorithm.
+
+# Features
+
+* The naive string-searching algorithm
+* Enhanced with 1-byte search like the libc++ and the libstd++ string::find
+* Specializing in UTF-8 strings, which is a feature of rust
+* The ASCII Stochastics search
+* Support the zero overhead trait.
+* minimum support: rustc 1.41.1 (f3e1a954d 2020-02-24)
+
+# Compatibility
+
+This crate is implemented to replace the rust std library.
+However, the method names are different, so please rewrite your code.
+It shouldn't be too difficult.
+
+compatibility:
+
+| rust `std::str`              | this crate                             |
+|:-----------------------------|:---------------------------------------|
+| `std::str::find()`           | `naive_opt::Search::search()`          |
+| `std::str::rfind()`          | `naive_opt::Search::rsearch()`         |
+| `std::str::contains()`       | `naive_opt::Search::includes()`        |
+| `std::str::match_indices()`  | `naive_opt::Search::search_indices()`  |
+| `std::str::rmatch_indices()` | `naive_opt::Search::rsearch_indices()` |
+
+# Examples
+
+## Example function:
+
+```rust
+use naive_opt::{string_search, string_rsearch};
+use naive_opt::{string_search_indices, string_rsearch_indices};
+
+let haystack = "111 a 111b";
+let needle = "a";
+let r = string_search(haystack, needle);
+assert_eq!(r, Some(4));
+
+assert_eq!(string_search(haystack, "1"), Some(0));
+assert_eq!(string_rsearch(haystack, "1"), Some(8));
+
+let v: Vec<_> = string_search_indices("abc345abc901abc", "abc").collect();
+assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+let v: Vec<_> = string_rsearch_indices("abc345abc901abc", "abc").collect();
+assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
+```
+
+## Example trait: Search
+
+```rust
+use naive_opt::Search;
+
+let haystack = "111 a 111b";
+let needle = "a";
+let r = haystack.search(needle);
+assert_eq!(r, Some(4));
+
+assert_eq!(haystack.search("1"), Some(0));
+assert_eq!(haystack.rsearch("1"), Some(8));
+
+let v: Vec<_> = "abc345abc901abc".search_indices("abc").collect();
+assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+let v: Vec<_> = "abc345abc901abc".rsearch_indices("abc").collect();
+assert_eq!(v, [(12, "abc"), (6, "abc"), (0, "abc")]);
+```
+
+## Example trait: SearchIn
+
+```rust
+use naive_opt::SearchIn;
+
+let haystack = "111 a 111b";
+let needle = "a";
+let r = needle.search_in(haystack);
+assert_eq!(r, Some(4));
+
+assert_eq!("1".search_in(haystack), Some(0));
+assert_eq!("1".rsearch_in(haystack), Some(8));
+```
+
+*/
 
 ///
 /// search the needle
@@ -677,7 +699,7 @@ fn naive_opt_mc_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     }
     #[cfg(all(not(feature = "only_mc_1st"), not(feature = "only_mc_last")))]
     {
-        if nee_bytes.len() == 0 {
+        if nee_bytes.is_empty() {
             return Some(0);
         }
         let byte_1st = nee_bytes[0];
@@ -708,7 +730,7 @@ fn naive_opt_mc_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     }
     #[cfg(all(not(feature = "only_mc_1st"), not(feature = "only_mc_last")))]
     {
-        if nee_bytes.len() == 0 {
+        if nee_bytes.is_empty() {
             return Some(hay_bytes.len());
         }
         let byte_1st = nee_bytes[0];

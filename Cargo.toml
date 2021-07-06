@@ -1,6 +1,6 @@
 [package]
 name = "naive_opt"
-version = "0.1.12"
+version = "0.1.13"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 edition = "2018"
 description = "The optimized naive string-search algorithm."
@@ -13,7 +13,6 @@ repository = "https://github.com/aki-akaguma/naive_opt"
 [features]
 default = ["std"]
 std = ["memx/std"]
-#no_std = ["memx/no_std"]
 
 # for tests
 only_mc_1st = []
