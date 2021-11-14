@@ -2,6 +2,12 @@ TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.1.16 (2021-11-14)
+=====
+
+* update crates: memx(0.1.18)
+* update crates: serde_json(1.0.70)
+
 0.1.15 (2021-09-11)
 =====
 
