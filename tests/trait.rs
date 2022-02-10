@@ -5,6 +5,14 @@ macro_rules! search_test {
         let r = $haystack.as_bytes().search_bytes($needle.as_bytes());
         assert_eq!(r, $result);
     };
+    ($haystack:expr, $needle:expr, $result:expr, $result_ignore_ascii_case:expr) => {
+        search_test!($haystack, $needle, $result);
+        //
+        let r = $haystack.search_ignore_ascii_case($needle);
+        assert_eq!(r, $result_ignore_ascii_case);
+        let r = $haystack.as_bytes().search_bytes_ignore_ascii_case($needle.as_bytes());
+        assert_eq!(r, $result_ignore_ascii_case);
+    };
 }
 macro_rules! rsearch_test {
     ($haystack:expr, $needle:expr, $result:expr) => {
@@ -13,327 +21,431 @@ macro_rules! rsearch_test {
         let r = $haystack.as_bytes().rsearch_bytes($needle.as_bytes());
         assert_eq!(r, $result);
     };
+    ($haystack:expr, $needle:expr, $result:expr, $result_ignore_ascii_case:expr) => {
+        rsearch_test!($haystack, $needle, $result);
+        //
+        let r = $haystack.rsearch_ignore_ascii_case($needle);
+        assert_eq!(r, $result_ignore_ascii_case);
+        let r = $haystack.as_bytes().rsearch_bytes_ignore_ascii_case($needle.as_bytes());
+        assert_eq!(r, $result_ignore_ascii_case);
+    };
 }
 
 #[cfg(test)]
 mod trait_str_str {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_empty_needle() {
-        search_test!("", "", Some(0)); // ***
-        search_test!("1", "", Some(0)); // ***
+        search_test!("", "", Some(0), Some(0));
+        search_test!("1", "", Some(0), Some(0));
         let haystack = "111 a 111b";
-        search_test!(haystack, "", Some(0)); // ***
+        search_test!(haystack, "", Some(0), Some(0));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b";
-        search_test!(haystack, "xxx", None);
-        search_test!(haystack, "12b", None);
-        search_test!(haystack, "a31", None);
+        search_test!(haystack, "xxx", None, None);
+        search_test!(haystack, "12b", None, None);
+        search_test!(haystack, "a31", None, None);
     }
     #[test]
     fn test_perfect_matching() {
         let haystack = "111 a 111b";
         let needle = "111 a 111b";
-        search_test!(haystack, needle, Some(0));
+        search_test!(haystack, needle, Some(0), Some(0));
+        let needle = "111 A 111B";
+        search_test!(haystack, needle, None, Some(0));
     }
     #[test]
     fn test_same_size() {
         let haystack = "111 a 111b";
         let needle = "111 a 1 1b";
-        search_test!(haystack, needle, None);
+        search_test!(haystack, needle, None, None);
+        let needle = "111 A 1 1A";
+        search_test!(haystack, needle, None, None);
     }
     #[test]
     fn test_large_needle() {
         let haystack = "111 a 111b";
         let needle = "111 a 111bZ";
-        search_test!(haystack, needle, None);
+        search_test!(haystack, needle, None, None);
     }
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b";
         search_test!(haystack, "b", Some(9));
+        search_test!(haystack, "B", None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b";
         search_test!(haystack, "a", Some(4));
         search_test!(haystack, "a 111", Some(4));
+        search_test!(haystack, "A", None, Some(4));
+        search_test!(haystack, "A 111", None, Some(4));
     }
 }
 
 #[cfg(test)]
 mod trait_str_string {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_empty_needle() {
-        search_test!("", &"".to_string(), Some(0)); // ***
-        search_test!("1", &"".to_string(), Some(0)); // ***
+        search_test!("", &"".to_string(), Some(0), Some(0));
+        search_test!("1", &"".to_string(), Some(0), Some(0));
         let haystack = "111 a 111b";
-        search_test!(haystack, &"".to_string(), Some(0)); // ***
+        search_test!(haystack, &"".to_string(), Some(0), Some(0));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b";
-        search_test!(haystack, &"xxx".to_string(), None);
-        search_test!(haystack, &"12b".to_string(), None);
-        search_test!(haystack, &"a31".to_string(), None);
+        search_test!(haystack, &"xxx".to_string(), None, None);
+        search_test!(haystack, &"12b".to_string(), None, None);
+        search_test!(haystack, &"a31".to_string(), None, None);
     }
     #[test]
     fn test_perfect_matching() {
         let haystack = "111 a 111b";
         let needle = "111 a 111b".to_string();
-        search_test!(haystack, &needle, Some(0));
+        search_test!(haystack, &needle, Some(0), Some(0));
+        let needle = "111 A 111B".to_string();
+        search_test!(haystack, &needle, None, Some(0));
     }
     #[test]
     fn test_same_size() {
         let haystack = "111 a 111b";
         let needle = "111 a 1 1b".to_string();
-        search_test!(haystack, &needle, None);
+        search_test!(haystack, &needle, None, None);
+        let needle = "111 A 1 1B".to_string();
+        search_test!(haystack, &needle, None, None);
     }
     #[test]
     fn test_large_needle() {
         let haystack = "111 a 111b";
         let needle = "111 a 111bZ".to_string();
-        search_test!(haystack, &needle, None);
+        search_test!(haystack, &needle, None, None);
     }
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b";
         search_test!(haystack, &"b".to_string(), Some(9));
+        search_test!(haystack, &"B".to_string(), None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b";
         search_test!(haystack, &"a".to_string(), Some(4));
         search_test!(haystack, &"a 111".to_string(), Some(4));
+        search_test!(haystack, &"A".to_string(), None, Some(4));
+        search_test!(haystack, &"A 111".to_string(), None, Some(4));
     }
 }
 
 #[cfg(test)]
 mod trait_string_str {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_empty_needle() {
-        search_test!(&"".to_string(), "", Some(0)); // ***
-        search_test!(&"1".to_string(), "", Some(0)); // ***
+        search_test!(&"".to_string(), "", Some(0), Some(0));
+        search_test!(&"1".to_string(), "", Some(0), Some(0));
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, "", Some(0)); // ***
+        search_test!(&haystack, "", Some(0), Some(0));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, "xxx", None);
-        search_test!(&haystack, "12b", None);
-        search_test!(&haystack, "a31", None);
+        search_test!(&haystack, "xxx", None, None);
+        search_test!(&haystack, "12b", None, None);
+        search_test!(&haystack, "a31", None, None);
     }
     #[test]
     fn test_perfect_matching() {
         let haystack = "111 a 111b".to_string();
         let needle = "111 a 111b";
-        search_test!(&haystack, needle, Some(0));
+        search_test!(&haystack, needle, Some(0), Some(0));
+        let needle = "111 A 111B";
+        search_test!(&haystack, needle, None, Some(0));
     }
     #[test]
     fn test_same_size() {
         let haystack = "111 a 111b".to_string();
         let needle = "111 a 1 1b";
-        search_test!(&haystack, needle, None);
+        search_test!(&haystack, needle, None, None);
+        let needle = "111 A 1 1B";
+        search_test!(&haystack, needle, None, None);
     }
     #[test]
     fn test_large_needle() {
         let haystack = "111 a 111b".to_string();
         let needle = "111 a 111bZ";
-        search_test!(&haystack, needle, None);
+        search_test!(&haystack, needle, None, None);
     }
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, "b", Some(9));
+        search_test!(&haystack, "B", None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, "a", Some(4));
         search_test!(&haystack, "a 111", Some(4));
+        search_test!(&haystack, "A", None, Some(4));
+        search_test!(&haystack, "A 111", None, Some(4));
     }
 }
 
 #[cfg(test)]
 mod trait_string_string {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_empty_needle() {
-        search_test!(&"".to_string(), &"".to_string(), Some(0)); // ***
-        search_test!(&"1".to_string(), &"".to_string(), Some(0)); // ***
+        search_test!(&"".to_string(), &"".to_string(), Some(0), Some(0));
+        search_test!(&"1".to_string(), &"".to_string(), Some(0), Some(0));
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, &"".to_string(), Some(0)); // ***
+        search_test!(&haystack, &"".to_string(), Some(0), Some(0));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, &"xxx".to_string(), None);
-        search_test!(&haystack, &"12b".to_string(), None);
-        search_test!(&haystack, &"a31".to_string(), None);
+        search_test!(&haystack, &"xxx".to_string(), None, None);
+        search_test!(&haystack, &"12b".to_string(), None, None);
+        search_test!(&haystack, &"a31".to_string(), None, None);
     }
     #[test]
     fn test_perfect_matching() {
         let haystack = "111 a 111b".to_string();
         let needle = "111 a 111b".to_string();
-        search_test!(&haystack, &needle, Some(0));
+        search_test!(&haystack, &needle, Some(0), Some(0));
+        let needle = "111 A 111B".to_string();
+        search_test!(&haystack, &needle, None, Some(0));
     }
     #[test]
     fn test_same_size() {
         let haystack = "111 a 111b".to_string();
         let needle = "111 a 1 1b".to_string();
-        search_test!(&haystack, &needle, None);
+        search_test!(&haystack, &needle, None, None);
+        let needle = "111 A 1 1B".to_string();
+        search_test!(&haystack, &needle, None, None);
     }
     #[test]
     fn test_large_needle() {
         let haystack = "111 a 111b".to_string();
         let needle = "111 a 111bZ".to_string();
-        search_test!(&haystack, &needle, None);
+        search_test!(&haystack, &needle, None, None);
     }
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, &"b".to_string(), Some(9));
+        search_test!(&haystack, &"B".to_string(), None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, &"a".to_string(), Some(4));
         search_test!(&haystack, &"a 111".to_string(), Some(4));
+        search_test!(&haystack, &"A".to_string(), None, Some(4));
+        search_test!(&haystack, &"A 111".to_string(), None, Some(4));
     }
 }
 
 #[cfg(test)]
 mod trait_str_str_rev {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_empty_needle() {
-        rsearch_test!("", "", Some(0)); // ***
-        rsearch_test!("1", "", Some(1)); // ***
+        rsearch_test!("", "", Some(0), Some(0));
+        rsearch_test!("1", "", Some(1), Some(1));
         let haystack = "111 a 111b";
-        rsearch_test!(haystack, "", Some(10)); // ***
+        rsearch_test!(haystack, "", Some(10), Some(10));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b";
-        rsearch_test!(haystack, "xxx", None);
-        rsearch_test!(haystack, "12b", None);
-        rsearch_test!(haystack, "a31", None);
+        rsearch_test!(haystack, "xxx", None, None);
+        rsearch_test!(haystack, "12b", None, None);
+        rsearch_test!(haystack, "a31", None, None);
     }
     #[test]
     fn test_perfect_matching() {
         let haystack = "111 a 111b";
         let needle = "111 a 111b";
-        rsearch_test!(haystack, needle, Some(0));
+        rsearch_test!(haystack, needle, Some(0), Some(0));
+        let needle = "111 A 111B";
+        rsearch_test!(haystack, needle, None, Some(0));
     }
     #[test]
     fn test_same_size() {
         let haystack = "111 a 111b";
         let needle = "111 a 1 1b";
-        rsearch_test!(haystack, needle, None);
+        rsearch_test!(haystack, needle, None, None);
+        let needle = "111 A 1 1B";
+        rsearch_test!(haystack, needle, None, None);
     }
     #[test]
     fn test_large_needle() {
         let haystack = "111 a 111b";
         let needle = "111 a 111bZ";
-        rsearch_test!(haystack, needle, None);
+        rsearch_test!(haystack, needle, None, None);
     }
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b";
         rsearch_test!(haystack, "b", Some(9));
+        search_test!(haystack, "B", None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b";
         rsearch_test!(haystack, "a", Some(4));
         rsearch_test!(haystack, "a 111", Some(4));
+        search_test!(haystack, "A", None, Some(4));
+        search_test!(haystack, "A 111", None, Some(4));
     }
 }
 
 #[cfg(test)]
 mod trai_search_indices {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_search_indices_0() {
-        let haystack = "111 a 111b";
-        let needle = "1";
+        let haystack = "aaa 1 aaab";
+        let needle = "a";
         let mut m = haystack.search_indices(needle);
-        assert_eq!(m.next(), Some((0, "1")));
-        assert_eq!(m.next(), Some((1, "1")));
-        assert_eq!(m.next(), Some((2, "1")));
-        assert_eq!(m.next(), Some((6, "1")));
-        assert_eq!(m.next(), Some((7, "1")));
-        assert_eq!(m.next(), Some((8, "1")));
+        assert_eq!(m.next(), Some((0, "a")));
+        assert_eq!(m.next(), Some((1, "a")));
+        assert_eq!(m.next(), Some((2, "a")));
+        assert_eq!(m.next(), Some((6, "a")));
+        assert_eq!(m.next(), Some((7, "a")));
+        assert_eq!(m.next(), Some((8, "a")));
         assert_eq!(m.next(), None);
     }
     #[test]
     fn test_search_indices_bytes_0() {
-        let haystack = "111 a 111b".as_bytes();
-        let needle = "1".as_bytes();
+        let haystack = "aaa 1 aaab".as_bytes();
+        let needle = "a".as_bytes();
         let mut m = haystack.search_indices_bytes(needle);
-        assert_eq!(m.next(), Some((0, "1".as_bytes())));
-        assert_eq!(m.next(), Some((1, "1".as_bytes())));
-        assert_eq!(m.next(), Some((2, "1".as_bytes())));
-        assert_eq!(m.next(), Some((6, "1".as_bytes())));
-        assert_eq!(m.next(), Some((7, "1".as_bytes())));
-        assert_eq!(m.next(), Some((8, "1".as_bytes())));
+        assert_eq!(m.next(), Some((0, "a".as_bytes())));
+        assert_eq!(m.next(), Some((1, "a".as_bytes())));
+        assert_eq!(m.next(), Some((2, "a".as_bytes())));
+        assert_eq!(m.next(), Some((6, "a".as_bytes())));
+        assert_eq!(m.next(), Some((7, "a".as_bytes())));
+        assert_eq!(m.next(), Some((8, "a".as_bytes())));
+        assert_eq!(m.next(), None);
+    }
+    #[test]
+    fn test_search_indices_ignore_ascii_case_0() {
+        let haystack = "aAa 1 aAab";
+        let needle = "A";
+        let mut m = haystack.search_indices_ignore_ascii_case(needle);
+        assert_eq!(m.next(), Some((0, "a")));
+        assert_eq!(m.next(), Some((1, "A")));
+        assert_eq!(m.next(), Some((2, "a")));
+        assert_eq!(m.next(), Some((6, "a")));
+        assert_eq!(m.next(), Some((7, "A")));
+        assert_eq!(m.next(), Some((8, "a")));
+        assert_eq!(m.next(), None);
+    }
+    #[test]
+    fn test_search_indices_bytes_ignore_ascii_case_0() {
+        let haystack = "aAa 1 aAab".as_bytes();
+        let needle = "A".as_bytes();
+        let mut m = haystack.search_indices_bytes_ignore_ascii_case(needle);
+        assert_eq!(m.next(), Some((0, "a".as_bytes())));
+        assert_eq!(m.next(), Some((1, "A".as_bytes())));
+        assert_eq!(m.next(), Some((2, "a".as_bytes())));
+        assert_eq!(m.next(), Some((6, "a".as_bytes())));
+        assert_eq!(m.next(), Some((7, "A".as_bytes())));
+        assert_eq!(m.next(), Some((8, "a".as_bytes())));
         assert_eq!(m.next(), None);
     }
 }
 
 #[cfg(test)]
 mod trai_rsearch_indices {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_rsearch_indices_0() {
-        let haystack = "111 a 111b";
-        let needle = "1";
+        let haystack = "aaa 1 aaab";
+        let needle = "a";
         let mut m = haystack.rsearch_indices(needle);
-        assert_eq!(m.next(), Some((8, "1")));
-        assert_eq!(m.next(), Some((7, "1")));
-        assert_eq!(m.next(), Some((6, "1")));
-        assert_eq!(m.next(), Some((2, "1")));
-        assert_eq!(m.next(), Some((1, "1")));
-        assert_eq!(m.next(), Some((0, "1")));
+        assert_eq!(m.next(), Some((8, "a")));
+        assert_eq!(m.next(), Some((7, "a")));
+        assert_eq!(m.next(), Some((6, "a")));
+        assert_eq!(m.next(), Some((2, "a")));
+        assert_eq!(m.next(), Some((1, "a")));
+        assert_eq!(m.next(), Some((0, "a")));
         assert_eq!(m.next(), None);
     }
     #[test]
     fn test_rsearch_indices_bytes_0() {
-        let haystack = "111 a 111b".as_bytes();
-        let needle = "1".as_bytes();
+        let haystack = "aaa 1 aaab".as_bytes();
+        let needle = "a".as_bytes();
         let mut m = haystack.rsearch_indices_bytes(needle);
-        assert_eq!(m.next(), Some((8, "1".as_bytes())));
-        assert_eq!(m.next(), Some((7, "1".as_bytes())));
-        assert_eq!(m.next(), Some((6, "1".as_bytes())));
-        assert_eq!(m.next(), Some((2, "1".as_bytes())));
-        assert_eq!(m.next(), Some((1, "1".as_bytes())));
-        assert_eq!(m.next(), Some((0, "1".as_bytes())));
+        assert_eq!(m.next(), Some((8, "a".as_bytes())));
+        assert_eq!(m.next(), Some((7, "a".as_bytes())));
+        assert_eq!(m.next(), Some((6, "a".as_bytes())));
+        assert_eq!(m.next(), Some((2, "a".as_bytes())));
+        assert_eq!(m.next(), Some((1, "a".as_bytes())));
+        assert_eq!(m.next(), Some((0, "a".as_bytes())));
+        assert_eq!(m.next(), None);
+    }
+    #[test]
+    fn test_rsearch_indices_ignore_ascii_case_0() {
+        let haystack = "aAa 1 aAab";
+        let needle = "A";
+        let mut m = haystack.rsearch_indices_ignore_ascii_case(needle);
+        assert_eq!(m.next(), Some((8, "a")));
+        assert_eq!(m.next(), Some((7, "A")));
+        assert_eq!(m.next(), Some((6, "a")));
+        assert_eq!(m.next(), Some((2, "a")));
+        assert_eq!(m.next(), Some((1, "A")));
+        assert_eq!(m.next(), Some((0, "a")));
+        assert_eq!(m.next(), None);
+    }
+    #[test]
+    fn test_rsearch_indices_bytes_ignore_ascii_case_0() {
+        let haystack = "aAa 1 aAab".as_bytes();
+        let needle = "A".as_bytes();
+        let mut m = haystack.rsearch_indices_bytes_ignore_ascii_case(needle);
+        assert_eq!(m.next(), Some((8, "a".as_bytes())));
+        assert_eq!(m.next(), Some((7, "A".as_bytes())));
+        assert_eq!(m.next(), Some((6, "a".as_bytes())));
+        assert_eq!(m.next(), Some((2, "a".as_bytes())));
+        assert_eq!(m.next(), Some((1, "A".as_bytes())));
+        assert_eq!(m.next(), Some((0, "a".as_bytes())));
         assert_eq!(m.next(), None);
     }
 }
 
 #[cfg(test)]
-mod func_str_str_large {
-    use naive_opt::Search;
-    use naive_opt::SearchBytes;
+mod trai_str_str_large {
+    use naive_opt::{Search, SearchBytes};
     #[test]
     fn test_large_needle_found() {
-        let haystack = "c11 a 111b12345678901234567890";
-        let needle = "12345678901234567890";
-        search_test!(haystack, needle, Some(10));
-        rsearch_test!(haystack, needle, Some(10));
+        let haystack = "c11 a 111b1234567890AbcDe67890";
+        //
+        let needle = "1234567890AbcDe67890";
+        search_test!(haystack, needle, Some(10), Some(10));
+        rsearch_test!(haystack, needle, Some(10), Some(10));
+        let needle = "1234567890abcde67890";
+        search_test!(haystack, needle, None, Some(10));
+        rsearch_test!(haystack, needle, None, Some(10));
+        let needle = "1234567890aBCdE67890";
+        search_test!(haystack, needle, None, Some(10));
+        rsearch_test!(haystack, needle, None, Some(10));
+        //
+        let needle = "AbcDe67890";
+        search_test!(haystack, needle, Some(20), Some(20));
+        rsearch_test!(haystack, needle, Some(20), Some(20));
+        let needle = "abcde67890";
+        search_test!(haystack, needle, None, Some(20));
+        rsearch_test!(haystack, needle, None, Some(20));
+        let needle = "aBCdE67890";
+        search_test!(haystack, needle, None, Some(20));
+        rsearch_test!(haystack, needle, None, Some(20));
     }
 }
 

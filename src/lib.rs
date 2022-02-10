@@ -8,7 +8,8 @@ The optimized naive string-search algorithm.
 * Specializing in UTF-8 strings, which is a feature of rust
 * The ASCII Stochastics search
 * Support the zero overhead trait.
-* minimum support: rustc 1.41.1 (f3e1a954d 2020-02-24)
+* Support ignore ascii case match.
+* minimum support: rustc 1.47.0 (18bf6b4f0 2020-10-07)
 
 # Compatibility
 
@@ -25,6 +26,18 @@ compatibility:
 | `std::str::contains()`       | `naive_opt::Search::includes()`        |
 | `std::str::match_indices()`  | `naive_opt::Search::search_indices()`  |
 | `std::str::rmatch_indices()` | `naive_opt::Search::rsearch_indices()` |
+
+# Ignore ascii case match
+
+This crate supports an ASCII case-insensitive match with each function.
+
+| this crate                                               |
+|:---------------------------------------------------------|
+| `naive_opt::Search::search_ignore_ascii_case()`          |
+| `naive_opt::Search::rsearch_ignore_ascii_case()`         |
+| `naive_opt::Search::includes_ignore_ascii_case()`        |
+| `naive_opt::Search::search_indices_ignore_ascii_case()`  |
+| `naive_opt::Search::rsearch_indices_ignore_ascii_case()` |
 
 # Examples
 
@@ -81,6 +94,24 @@ assert_eq!("1".search_in(haystack), Some(0));
 assert_eq!("1".rsearch_in(haystack), Some(8));
 ```
 
+## Example Ignore ascii case match
+
+```rust
+use naive_opt::Search;
+
+let haystack = "111 a 111b";
+let needle = "A";
+let r = haystack.search_ignore_ascii_case(needle);
+assert_eq!(r, Some(4));
+assert_eq!(haystack.rsearch_ignore_ascii_case("A"), Some(4));
+
+let v: Vec<_> = "abc345aBc901abc".search_indices_ignore_ascii_case("abc").collect();
+assert_eq!(v, [(0, "abc"), (6, "aBc"), (12, "abc")]);
+let v: Vec<_> = "abc345aBc901abc".rsearch_indices_ignore_ascii_case("abc").collect();
+assert_eq!(v, [(12, "abc"), (6, "aBc"), (0, "abc")]);
+
+assert_eq!("<A HREF=http://".includes_ignore_ascii_case("href"), true);
+```
 */
 
 ///
@@ -144,6 +175,30 @@ pub trait Search {
     /// returns false if it does not.
     ///
     fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool;
+    ///
+    /// search the needle in self, ignore ascii case.
+    ///
+    /// return index of self, if it found the needle. Otherwise return None.
+    ///
+    fn search_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize>;
+    ///
+    /// reverse search the needle in self, ignore ascii case.
+    ///
+    /// return index of self, if it found the needle. Otherwise return None.
+    ///
+    fn rsearch_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize>;
+    ///
+    /// An iterator over the matches of needle in self, ignore ascii case.
+    ///
+    fn search_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndicesIgnoreAsciiCase<'a, P>;
+    ///
+    /// An reverse search iterator over the matches of needle in self, ignore ascii case.
+    ///
+    fn rsearch_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> RevSearchIndicesIgnoreAsciiCase<'a, P>;
+    ///
+    /// includes the needle in self, ignore ascii case.
+    ///
+    fn includes_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool;
 }
 impl<'c> Search for &'c str {
     #[inline]
@@ -165,6 +220,27 @@ impl<'c> Search for &'c str {
     #[inline]
     fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
         needle.includes_in(self)
+    }
+    //
+    #[inline]
+    fn search_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in_ignore_ascii_case(self)
+    }
+    #[inline]
+    fn rsearch_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in_ignore_ascii_case(self)
+    }
+    #[inline]
+    fn search_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndicesIgnoreAsciiCase<'a, P> {
+        SearchIndicesIgnoreAsciiCase::new(self, needle)
+    }
+    #[inline]
+    fn rsearch_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> RevSearchIndicesIgnoreAsciiCase<'a, P> {
+        RevSearchIndicesIgnoreAsciiCase::new(self, needle)
+    }
+    #[inline]
+    fn includes_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in_ignore_ascii_case(self)
     }
 }
 impl<'c> Search for String {
@@ -188,6 +264,27 @@ impl<'c> Search for String {
     fn includes<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
         needle.includes_in(self)
     }
+    //
+    #[inline]
+    fn search_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in_ignore_ascii_case(self.as_str())
+    }
+    #[inline]
+    fn rsearch_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in_ignore_ascii_case(self.as_str())
+    }
+    #[inline]
+    fn search_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> SearchIndicesIgnoreAsciiCase<'a, P> {
+        SearchIndicesIgnoreAsciiCase::new(self.as_str(), needle)
+    }
+    #[inline]
+    fn rsearch_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> RevSearchIndicesIgnoreAsciiCase<'a, P> {
+        RevSearchIndicesIgnoreAsciiCase::new(self.as_str(), needle)
+    }
+    #[inline]
+    fn includes_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in_ignore_ascii_case(self)
+    }
 }
 
 pub trait SearchBytes {
@@ -200,6 +297,16 @@ pub trait SearchBytes {
     where
         P: SearchInBytes<'a>;
     fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool;
+    //
+    fn search_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize>;
+    fn rsearch_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize>;
+    fn search_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> SearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>;
+    fn rsearch_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>;
+    fn includes_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool;
 }
 impl<'c> SearchBytes for &'c [u8] {
     #[inline]
@@ -227,6 +334,33 @@ impl<'c> SearchBytes for &'c [u8] {
     #[inline]
     fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
         needle.includes_in(self)
+    }
+    //
+    #[inline]
+    fn search_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in_ignore_ascii_case(self)
+    }
+    #[inline]
+    fn rsearch_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in_ignore_ascii_case(self)
+    }
+    #[inline]
+    fn search_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> SearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
+        SearchIndicesBytesIgnoreAsciiCase::new(self, needle)
+    }
+    #[inline]
+    fn rsearch_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
+        RevSearchIndicesBytesIgnoreAsciiCase::new(self, needle)
+    }
+    #[inline]
+    fn includes_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in_ignore_ascii_case(self)
     }
 }
 impl<'c> SearchBytes for &'c str {
@@ -256,6 +390,33 @@ impl<'c> SearchBytes for &'c str {
     fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
         needle.includes_in(self.as_bytes())
     }
+    //
+    #[inline]
+    fn search_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in_ignore_ascii_case(self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in_ignore_ascii_case(self.as_bytes())
+    }
+    #[inline]
+    fn search_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> SearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
+        SearchIndicesBytesIgnoreAsciiCase::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn rsearch_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
+        RevSearchIndicesBytesIgnoreAsciiCase::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn includes_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in_ignore_ascii_case(self.as_bytes())
+    }
 }
 impl<'c> SearchBytes for String {
     #[inline]
@@ -283,6 +444,33 @@ impl<'c> SearchBytes for String {
     #[inline]
     fn includes_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
         needle.includes_in(self.as_bytes())
+    }
+    //
+    #[inline]
+    fn search_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.search_in_ignore_ascii_case(self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
+        needle.rsearch_in_ignore_ascii_case(self.as_bytes())
+    }
+    #[inline]
+    fn search_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> SearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
+        SearchIndicesBytesIgnoreAsciiCase::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn rsearch_indices_bytes_ignore_ascii_case<'a, P>(&'a self, needle: P) -> RevSearchIndicesBytesIgnoreAsciiCase<'a, P>
+    where
+        P: SearchInBytes<'a>,
+    {
+        RevSearchIndicesBytesIgnoreAsciiCase::new(self.as_bytes(), needle)
+    }
+    #[inline]
+    fn includes_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool {
+        needle.includes_in_ignore_ascii_case(self.as_bytes())
     }
 }
 
@@ -414,6 +602,135 @@ impl<'a, P: SearchInBytes<'a>> Iterator for RevSearchIndicesBytes<'a, P> {
     }
 }
 
+
+///
+/// Created with the method [Search::search_indices_ignore_ascii_case()].
+///
+pub struct SearchIndicesIgnoreAsciiCase<'a, P: SearchIn<'a>> {
+    curr_idx: usize,
+    haystack: &'a str,
+    needle: P,
+}
+impl<'a, P: SearchIn<'a>> SearchIndicesIgnoreAsciiCase<'a, P> {
+    fn new(a_haystack: &'a str, a_needle: P) -> SearchIndicesIgnoreAsciiCase<'a, P> {
+        SearchIndicesIgnoreAsciiCase {
+            curr_idx: 0,
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchIn<'a>> Iterator for SearchIndicesIgnoreAsciiCase<'a, P> {
+    type Item = (usize, &'a str);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.search_in_ignore_ascii_case(&self.haystack[self.curr_idx..]) {
+            Some(idx) => {
+                self.curr_idx += idx;
+                let st = self.curr_idx;
+                let ed = st + self.needle.len();
+                self.curr_idx = ed;
+                Some((st, &self.haystack[st..ed]))
+            }
+            None => None,
+        }
+    }
+}
+
+pub struct SearchIndicesBytesIgnoreAsciiCase<'a, P: SearchInBytes<'a>> {
+    curr_idx: usize,
+    haystack: &'a [u8],
+    needle: P,
+}
+impl<'a, P: SearchInBytes<'a>> SearchIndicesBytesIgnoreAsciiCase<'a, P> {
+    fn new(a_haystack: &'a [u8], a_needle: P) -> SearchIndicesBytesIgnoreAsciiCase<'a, P> {
+        SearchIndicesBytesIgnoreAsciiCase {
+            curr_idx: 0,
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchInBytes<'a>> Iterator for SearchIndicesBytesIgnoreAsciiCase<'a, P> {
+    type Item = (usize, &'a [u8]);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.search_in_ignore_ascii_case(&self.haystack[self.curr_idx..]) {
+            Some(idx) => {
+                self.curr_idx += idx;
+                let st = self.curr_idx;
+                let ed = st + self.needle.len();
+                self.curr_idx = ed;
+                Some((st, &self.haystack[st..ed]))
+            }
+            None => None,
+        }
+    }
+}
+
+///
+/// Created with the method [Search::rsearch_indices_ignore_ascii_case()].
+///
+pub struct RevSearchIndicesIgnoreAsciiCase<'a, P: SearchIn<'a>> {
+    curr_ed: usize,
+    haystack: &'a str,
+    needle: P,
+}
+impl<'a, P: SearchIn<'a>> RevSearchIndicesIgnoreAsciiCase<'a, P> {
+    fn new(a_haystack: &'a str, a_needle: P) -> RevSearchIndicesIgnoreAsciiCase<'a, P> {
+        RevSearchIndicesIgnoreAsciiCase {
+            curr_ed: a_haystack.len(),
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchIn<'a>> Iterator for RevSearchIndicesIgnoreAsciiCase<'a, P> {
+    type Item = (usize, &'a str);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.rsearch_in_ignore_ascii_case(&self.haystack[0..self.curr_ed]) {
+            Some(idx) => {
+                let st = idx;
+                let ed = st + self.needle.len();
+                self.curr_ed = st;
+                Some((st, &self.haystack[st..ed]))
+            }
+            None => None,
+        }
+    }
+}
+
+pub struct RevSearchIndicesBytesIgnoreAsciiCase<'a, P: SearchInBytes<'a>> {
+    curr_ed: usize,
+    haystack: &'a [u8],
+    needle: P,
+}
+impl<'a, P: SearchInBytes<'a>> RevSearchIndicesBytesIgnoreAsciiCase<'a, P> {
+    fn new(a_haystack: &'a [u8], a_needle: P) -> RevSearchIndicesBytesIgnoreAsciiCase<'a, P> {
+        RevSearchIndicesBytesIgnoreAsciiCase {
+            curr_ed: a_haystack.len(),
+            haystack: a_haystack,
+            needle: a_needle,
+        }
+    }
+}
+impl<'a, P: SearchInBytes<'a>> Iterator for RevSearchIndicesBytesIgnoreAsciiCase<'a, P> {
+    type Item = (usize, &'a [u8]);
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.needle.rsearch_in_ignore_ascii_case(&self.haystack[0..self.curr_ed]) {
+            Some(idx) => {
+                let st = idx;
+                let ed = st + self.needle.len();
+                self.curr_ed = st;
+                Some((st, &self.haystack[st..ed]))
+            }
+            None => None,
+        }
+    }
+}
+
 ///
 /// search in the haystack
 ///
@@ -432,6 +749,18 @@ pub trait SearchIn<'a>: Sized {
     /// return index of the haystack, if it found self. Otherwise return None.
     ///
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize>;
+    ///
+    /// search self in the haystack, ignore ascii case.
+    ///
+    /// return index of the haystack, if it found self. Otherwise return None.
+    ///
+    fn search_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize>;
+    ///
+    /// reverse search self in the haystack, ignore ascii case.
+    ///
+    /// return index of the haystack, if it found self. Otherwise return None.
+    ///
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize>;
     ///
     /// return the length of self
     ///
@@ -452,6 +781,16 @@ pub trait SearchIn<'a>: Sized {
     fn includes_in(&self, haystack: &'a str) -> bool {
         self.search_in(haystack).is_some()
     }
+    ///
+    /// includes self in the haystack, ignore ascii case.
+    ///
+    /// returns true if the given pattern matches a sub-slice of this string slice.
+    /// returns false if it does not.
+    ///
+    #[inline]
+    fn includes_in_ignore_ascii_case(&self, haystack: &'a str) -> bool {
+        self.search_in_ignore_ascii_case(haystack).is_some()
+    }
 }
 impl<'a, 'b> SearchIn<'a> for &'b str {
     #[inline]
@@ -461,6 +800,14 @@ impl<'a, 'b> SearchIn<'a> for &'b str {
     #[inline]
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
         naive_opt_mc_rev_bytes(haystack.as_bytes(), self.as_bytes())
+    }
+    #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack.as_bytes(), self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), self.as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -477,6 +824,14 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
         naive_opt_mc_rev_bytes(haystack.as_bytes(), self.as_str().as_bytes())
     }
     #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack.as_bytes(), self.as_str().as_bytes())
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), self.as_str().as_bytes())
+    }
+    #[inline]
     fn len(&self) -> usize {
         self.as_str().len()
     }
@@ -491,6 +846,14 @@ impl<'a, 'b> SearchIn<'a> for char {
         naive_opt_mc_rev_bytes(haystack.as_bytes(), self.to_string().as_str().as_bytes())
     }
     #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack.as_bytes(), self.to_string().as_str().as_bytes())
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), self.to_string().as_str().as_bytes())
+    }
+    #[inline]
     fn len(&self) -> usize {
         self.to_string().as_bytes().len()
     }
@@ -499,6 +862,8 @@ impl<'a, 'b> SearchIn<'a> for char {
 pub trait SearchInBytes<'a>: Sized {
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize>;
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize>;
+    fn search_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize>;
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize>;
     fn len(&self) -> usize;
     fn is_empty(&self) -> bool {
         self.len() == 0
@@ -506,6 +871,10 @@ pub trait SearchInBytes<'a>: Sized {
     #[inline]
     fn includes_in(&self, haystack: &'a [u8]) -> bool {
         self.search_in(haystack).is_some()
+    }
+    #[inline]
+    fn includes_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> bool {
+        self.search_in_ignore_ascii_case(haystack).is_some()
     }
 }
 impl<'a, 'b> SearchInBytes<'a> for &'b [u8] {
@@ -516,6 +885,14 @@ impl<'a, 'b> SearchInBytes<'a> for &'b [u8] {
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
         naive_opt_mc_rev_bytes(haystack, self)
+    }
+    #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack, self)
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack, self)
     }
     #[inline]
     fn len(&self) -> usize {
@@ -536,6 +913,14 @@ impl<'a, 'b> SearchInBytes<'a> for &'b str {
         naive_opt_mc_rev_bytes(haystack, self.as_bytes())
     }
     #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack, self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack, self.as_bytes())
+    }
+    #[inline]
     fn len(&self) -> usize {
         self.as_bytes().len()
     }
@@ -550,6 +935,14 @@ impl<'a, 'b> SearchInBytes<'a> for &'b String {
         naive_opt_mc_rev_bytes(haystack, self.as_bytes())
     }
     #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack, self.as_bytes())
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack, self.as_bytes())
+    }
+    #[inline]
     fn len(&self) -> usize {
         self.as_str().len()
     }
@@ -562,6 +955,14 @@ impl<'a, 'b> SearchInBytes<'a> for char {
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
         naive_opt_mc_rev_bytes(haystack, self.to_string().as_bytes())
+    }
+    #[inline]
+    fn search_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_bytes_iac(haystack, self.to_string().as_bytes())
+    }
+    #[inline]
+    fn rsearch_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
+        naive_opt_mc_rev_bytes_iac(haystack, self.to_string().as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
@@ -603,6 +1004,42 @@ pub fn string_search_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
 ///
 pub fn string_rsearch_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
     naive_opt_mc_rev_bytes(haystack, needle)
+}
+
+///
+/// search the needle in the haystack, ignore ascii case.
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_search_ignore_ascii_case(haystack: &str, needle: &str) -> Option<usize> {
+    naive_opt_mc_bytes_iac(haystack.as_bytes(), needle.as_bytes())
+}
+
+///
+/// search the needle in the haystack bytes, ignore ascii case.
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_search_bytes_ignore_ascii_case(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    naive_opt_mc_bytes_iac(haystack, needle)
+}
+
+///
+/// reverse search the needle in the haystack, ignore ascii case.
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_rsearch_ignore_ascii_case(haystack: &str, needle: &str) -> Option<usize> {
+    naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), needle.as_bytes())
+}
+
+///
+/// reverse search the needle in the haystack bytes, ignore ascii case.
+///
+/// return index of the haystack, if it found the needle. Otherwise return None.
+///
+pub fn string_rsearch_bytes_ignore_ascii_case(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    naive_opt_mc_rev_bytes_iac(haystack, needle)
 }
 
 ///
@@ -669,6 +1106,34 @@ pub fn string_rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(
     RevSearchIndicesBytes::new(haystack, needle)
 }
 
+
+pub fn string_search_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(
+    haystack: &'a str,
+    needle: P,
+) -> SearchIndicesIgnoreAsciiCase<'a, P> {
+    SearchIndicesIgnoreAsciiCase::new(haystack, needle)
+}
+
+pub fn string_search_indices_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(
+    haystack: &'a [u8],
+    needle: P,
+) -> SearchIndicesBytesIgnoreAsciiCase<'a, P> {
+    SearchIndicesBytesIgnoreAsciiCase::new(haystack, needle)
+}
+
+pub fn string_rsearch_indices_ignore_ascii_case<'a, P: SearchIn<'a>>(
+    haystack: &'a str,
+    needle: P,
+) -> RevSearchIndicesIgnoreAsciiCase<'a, P> {
+    RevSearchIndicesIgnoreAsciiCase::new(haystack, needle)
+}
+
+pub fn string_rsearch_indices_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(
+    haystack: &'a [u8],
+    needle: P,
+) -> RevSearchIndicesBytesIgnoreAsciiCase<'a, P> {
+    RevSearchIndicesBytesIgnoreAsciiCase::new(haystack, needle)
+}
 //
 // Only UTF-8 character sequence are used in the rust.
 //
@@ -682,9 +1147,13 @@ pub fn string_rsearch_indices_bytes<'a, P: SearchInBytes<'a>>(
 // I think it is stochastically effective to use the last byte for seaching.
 //
 // Otherwise the ASCII character are using many space code: 0x20.
-// This code do atochastics using by the 1st byte and last byte.
+// This code do stochastics using by the 1st byte and last byte.
 //
+
+#[cfg(not(feature = "only_mc_last"))]
 mod mc_1st;
+
+#[cfg(not(feature = "only_mc_1st"))]
 mod mc_last;
 
 #[inline(always)]
@@ -757,3 +1226,65 @@ const _ASCII_STOCHAS: [u8; 128] = [
     0, 1, 0, 39, 7, 20, 19, 69, 11, 9, 18, 39, 0, 2, 18, 12, 38, 38, 12, 1, 34, 35, 50, 13, 5, 5,
     2, 7, 0, 0, 2, 0, 0, 0,
 ];
+
+#[inline(always)]
+fn naive_opt_mc_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
+    #[cfg(feature = "only_mc_1st")]
+    {
+        mc_1st::naive_opt_mc_1st_bytes_iac(hay_bytes, nee_bytes)
+    }
+    #[cfg(feature = "only_mc_last")]
+    {
+        mc_last::naive_opt_mc_last_bytes_iac(hay_bytes, nee_bytes)
+    }
+    #[cfg(all(not(feature = "only_mc_1st"), not(feature = "only_mc_last")))]
+    {
+        if nee_bytes.is_empty() {
+            return Some(0);
+        }
+        let byte_1st = nee_bytes[0];
+        let byte_last = nee_bytes[nee_bytes.len() - 1];
+        if byte_1st.is_ascii() && byte_last.is_ascii() {
+            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
+            let weight_last = _ASCII_STOCHAS[byte_last as usize];
+            if weight_1st <= weight_last {
+                mc_1st::naive_opt_mc_1st_bytes_iac(hay_bytes, nee_bytes)
+            } else {
+                mc_last::naive_opt_mc_last_bytes_iac(hay_bytes, nee_bytes)
+            }
+        } else {
+            mc_last::naive_opt_mc_last_bytes_iac(hay_bytes, nee_bytes)
+        }
+    }
+}
+
+#[inline(always)]
+fn naive_opt_mc_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
+    #[cfg(feature = "only_mc_1st")]
+    {
+        mc_1st::naive_opt_mc_1st_rev_bytes_iac(hay_bytes, nee_bytes)
+    }
+    #[cfg(feature = "only_mc_last")]
+    {
+        mc_last::naive_opt_mc_last_rev_bytes_iac(hay_bytes, nee_bytes)
+    }
+    #[cfg(all(not(feature = "only_mc_1st"), not(feature = "only_mc_last")))]
+    {
+        if nee_bytes.is_empty() {
+            return Some(hay_bytes.len());
+        }
+        let byte_1st = nee_bytes[0];
+        let byte_last = nee_bytes[nee_bytes.len() - 1];
+        if byte_1st.is_ascii() && byte_last.is_ascii() {
+            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
+            let weight_last = _ASCII_STOCHAS[byte_last as usize];
+            if weight_1st <= weight_last {
+                mc_1st::naive_opt_mc_1st_rev_bytes_iac(hay_bytes, nee_bytes)
+            } else {
+                mc_last::naive_opt_mc_last_rev_bytes_iac(hay_bytes, nee_bytes)
+            }
+        } else {
+            mc_last::naive_opt_mc_last_rev_bytes_iac(hay_bytes, nee_bytes)
+        }
+    }
+}

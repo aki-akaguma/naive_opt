@@ -1,6 +1,6 @@
 [package]
 name = "naive_opt"
-version = "0.1.16"
+version = "0.1.17"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 edition = "2018"
 description = "The optimized naive string-search algorithm."
@@ -20,6 +20,7 @@ only_mc_last = []
 
 [dependencies]
 memx = { version="0.1", default-features=false }
+#memx = { git="https://github.com/aki-akaguma/memx.git", default-features=false }
 
 [dev-dependencies]
 criterion = "0.3"

@@ -1,6 +1,11 @@
-TBD
+TBD: naive_opt
 ===
 Unreleased changes. Release notes have not yet been written.
+
+0.1.17 (2022-02-11)
+=====
+
+* add many `xxx_ignore_ascii_case()`.
 
 0.1.16 (2021-11-14)
 =====

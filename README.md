@@ -9,6 +9,7 @@ The optimized naive string-search algorithm.
 * Specializing in UTF-8 strings, which is a feature of rust
 * The ASCII Stochastics search
 * Support the zero overhead trait.
+* Support ignore ascii case match.
 * minimum support: rustc 1.41.1 (f3e1a954d 2020-02-24)
 
 ## Compatibility
@@ -26,6 +27,18 @@ compatibility:
 | `std::str::contains()`       | `naive_opt::Search::includes()`        |
 | `std::str::match_indices()`  | `naive_opt::Search::search_indices()`  |
 | `std::str::rmatch_indices()` | `naive_opt::Search::rsearch_indices()` |
+
+## Ignore ascii case match
+
+This crate supports an ASCII case-insensitive match with each function.
+
+| this crate                                               |
+|:---------------------------------------------------------|
+| `naive_opt::Search::search_ignore_ascii_case()`          |
+| `naive_opt::Search::rsearch_ignore_ascii_case()`         |
+| `naive_opt::Search::includes_ignore_ascii_case()`        |
+| `naive_opt::Search::search_indices_ignore_ascii_case()`  |
+| `naive_opt::Search::rsearch_indices_ignore_ascii_case()` |
 
 ## Examples
 
@@ -82,6 +95,24 @@ assert_eq!("1".search_in(haystack), Some(0));
 assert_eq!("1".rsearch_in(haystack), Some(8));
 ```
 
+### Example Ignore ascii case match
+
+```rust
+use naive_opt::Search;
+
+let haystack = "111 a 111b";
+let needle = "A";
+let r = haystack.search_ignore_ascii_case(needle);
+assert_eq!(r, Some(4));
+assert_eq!(haystack.rsearch_ignore_ascii_case("A"), Some(4));
+
+let v: Vec<_> = "abc345aBc901abc".search_indices_ignore_ascii_case("abc").collect();
+assert_eq!(v, [(0, "abc"), (6, "aBc"), (12, "abc")]);
+let v: Vec<_> = "abc345aBc901abc".rsearch_indices_ignore_ascii_case("abc").collect();
+assert_eq!(v, [(12, "abc"), (6, "aBc"), (0, "abc")]);
+
+assert_eq!("<A HREF=http://".includes_ignore_ascii_case("href"), true);
+```
 
 # Benchmark results
 
