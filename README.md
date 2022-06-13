@@ -4,13 +4,13 @@ The optimized naive string-search algorithm.
 
 ## Features
 
-* The naive string-searching algorithm
-* Enhanced with 1-byte search like the libc++ and the libstd++ string::find
-* Specializing in UTF-8 strings, which is a feature of rust
-* The ASCII Stochastics search
-* Support the zero overhead trait.
-* Support ignore ascii case match.
-* minimum support: rustc 1.41.1 (f3e1a954d 2020-02-24)
+- The naive string-searching algorithm
+- Enhanced with 1-byte search like the libc++ and the libstd++ string::find
+- Specializing in UTF-8 strings, which is a feature of rust
+- The ASCII Stochastics search
+- Support the zero overhead trait.
+- Support ignore ascii case match.
+- minimum support rustc 1.56.1 (59eed8a2a 2021-11-01)
 
 ## Compatibility
 

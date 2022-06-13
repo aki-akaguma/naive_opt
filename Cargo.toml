@@ -2,7 +2,7 @@
 name = "naive_opt"
 version = "0.1.17"
 authors = ["aki <aki.akaguma@hotmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "The optimized naive string-search algorithm."
 keywords = ["search"]
 categories = ["algorithms"]
