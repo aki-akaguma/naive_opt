@@ -10,7 +10,9 @@ macro_rules! search_test {
         //
         let r = $haystack.search_ignore_ascii_case($needle);
         assert_eq!(r, $result_ignore_ascii_case);
-        let r = $haystack.as_bytes().search_bytes_ignore_ascii_case($needle.as_bytes());
+        let r = $haystack
+            .as_bytes()
+            .search_bytes_ignore_ascii_case($needle.as_bytes());
         assert_eq!(r, $result_ignore_ascii_case);
     };
 }
@@ -26,7 +28,9 @@ macro_rules! rsearch_test {
         //
         let r = $haystack.rsearch_ignore_ascii_case($needle);
         assert_eq!(r, $result_ignore_ascii_case);
-        let r = $haystack.as_bytes().rsearch_bytes_ignore_ascii_case($needle.as_bytes());
+        let r = $haystack
+            .as_bytes()
+            .rsearch_bytes_ignore_ascii_case($needle.as_bytes());
         assert_eq!(r, $result_ignore_ascii_case);
     };
 }

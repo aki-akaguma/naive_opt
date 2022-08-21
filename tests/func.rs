@@ -34,7 +34,7 @@ macro_rules! rsearch_test {
 #[cfg(test)]
 mod func_str_str {
     use naive_opt::{string_search, string_search_bytes};
-    use naive_opt::{string_search_ignore_ascii_case, string_search_bytes_ignore_ascii_case};
+    use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
         search_test!("", "", Some(0), Some(0));
@@ -90,7 +90,7 @@ mod func_str_str {
 #[cfg(test)]
 mod func_str_string {
     use naive_opt::{string_search, string_search_bytes};
-    use naive_opt::{string_search_ignore_ascii_case, string_search_bytes_ignore_ascii_case};
+    use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
         search_test!("", &"".to_string(), Some(0), Some(0));
@@ -146,7 +146,7 @@ mod func_str_string {
 #[cfg(test)]
 mod func_string_str {
     use naive_opt::{string_search, string_search_bytes};
-    use naive_opt::{string_search_ignore_ascii_case, string_search_bytes_ignore_ascii_case};
+    use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
         search_test!(&"".to_string(), "", Some(0), Some(0));
@@ -202,7 +202,7 @@ mod func_string_str {
 #[cfg(test)]
 mod func_string_string {
     use naive_opt::{string_search, string_search_bytes};
-    use naive_opt::{string_search_ignore_ascii_case, string_search_bytes_ignore_ascii_case};
+    use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
         search_test!(&"".to_string(), &"".to_string(), Some(0), Some(0));
@@ -258,7 +258,7 @@ mod func_string_string {
 #[cfg(test)]
 mod func_str_str_rev {
     use naive_opt::{string_rsearch, string_rsearch_bytes};
-    use naive_opt::{string_rsearch_ignore_ascii_case, string_rsearch_bytes_ignore_ascii_case};
+    use naive_opt::{string_rsearch_bytes_ignore_ascii_case, string_rsearch_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
         rsearch_test!("", "", Some(0), Some(0));
@@ -314,7 +314,9 @@ mod func_str_str_rev {
 #[cfg(test)]
 mod func_search_indices {
     use naive_opt::{string_search_indices, string_search_indices_bytes};
-    use naive_opt::{string_search_indices_ignore_ascii_case, string_search_indices_bytes_ignore_ascii_case};
+    use naive_opt::{
+        string_search_indices_bytes_ignore_ascii_case, string_search_indices_ignore_ascii_case,
+    };
     #[test]
     fn test_search_indices_0() {
         let haystack = "aaa 1 aaab";
@@ -372,7 +374,9 @@ mod func_search_indices {
 #[cfg(test)]
 mod func_rsearch_indices {
     use naive_opt::{string_rsearch_indices, string_rsearch_indices_bytes};
-    use naive_opt::{string_rsearch_indices_ignore_ascii_case, string_rsearch_indices_bytes_ignore_ascii_case};
+    use naive_opt::{
+        string_rsearch_indices_bytes_ignore_ascii_case, string_rsearch_indices_ignore_ascii_case,
+    };
     #[test]
     fn test_rsearch_indices_0() {
         let haystack = "aaa 1 aaab";
@@ -429,10 +433,10 @@ mod func_rsearch_indices {
 
 #[cfg(test)]
 mod func_str_str_large {
-    use naive_opt::{string_search, string_search_bytes};
-    use naive_opt::{string_search_ignore_ascii_case, string_search_bytes_ignore_ascii_case};
     use naive_opt::{string_rsearch, string_rsearch_bytes};
-    use naive_opt::{string_rsearch_ignore_ascii_case, string_rsearch_bytes_ignore_ascii_case};
+    use naive_opt::{string_rsearch_bytes_ignore_ascii_case, string_rsearch_ignore_ascii_case};
+    use naive_opt::{string_search, string_search_bytes};
+    use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_large_needle_found() {
         let haystack = "c11 a 111b1234567890AbcDe67890";

@@ -2,6 +2,8 @@ TBD: naive_opt
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* fix clippy: this lifetime isn't used in the impl
+
 0.1.18 (2022-06-13)
 =====
 

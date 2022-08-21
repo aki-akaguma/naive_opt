@@ -93,7 +93,11 @@ pub(crate) fn naive_opt_mc_1st_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8])
     let byte_1st = nee_bytes[0];
     let byte_1st_uc = byte_1st.to_ascii_uppercase();
     let byte_1st_lc = byte_1st.to_ascii_lowercase();
-    for m in ::memx::iter::memrchr_double_iter(&hay_bytes[..(hay_len - nee_len + 1)], byte_1st_uc, byte_1st_lc) {
+    for m in ::memx::iter::memrchr_double_iter(
+        &hay_bytes[..(hay_len - nee_len + 1)],
+        byte_1st_uc,
+        byte_1st_lc,
+    ) {
         let st = m;
         let ed = st + nee_len;
         if ed > hay_len {
