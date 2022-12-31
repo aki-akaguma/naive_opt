@@ -23,7 +23,7 @@ memx = { version="0.1", default-features=false }
 #memx = { git="https://github.com/aki-akaguma/memx.git", default-features=false }
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.4"
 
 [workspace]
 members = [

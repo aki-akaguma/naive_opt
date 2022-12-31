@@ -20,6 +20,11 @@ clean:
 	@cargo clean
 	@rm -f z.*
 
+test-gnu:
+	cargo test $(TARGET_GNU)
+
+test-musl:
+	cargo test $(TARGET_MUSL)
 
 bench-all: bench-gnu bench-musl
 

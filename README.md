@@ -116,6 +116,20 @@ assert_eq!("<A HREF=http://".includes_ignore_ascii_case("href"), true);
 
 # Benchmark results
 
+- compile by rustc 1.66.0 (69f9c33d7 2022-12-12)
+
+|         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
+|:------------------------|------------:|------------:|------------:|------------:|
+| std_str_str             |  724.360 μc |  658.760 μc |  673.970 μc |  497.570 μc |
+| std_string_string       |  728.580 μc |  663.240 μc |  676.770 μc |  499.840 μc |
+| func_str_str            |   91.782 μc |  115.070 μc |   93.113 μc |  112.500 μc |
+| func_string_string      |   91.752 μc |  115.780 μc |   91.619 μc |  112.340 μc |
+| trait_str_str           |   87.110 μc |  108.330 μc |   87.466 μc |  105.960 μc |
+| trait_string_string     |   87.201 μc |  107.620 μc |   87.738 μc |  105.900 μc |
+| std_indices             |  456.860 μc |  366.500 μc |  454.770 μc |  361.730 μc |
+| func_indices            |   95.400 μc |  117.080 μc |   96.759 μc |  111.610 μc |
+| trait_indices           |   95.474 μc |  117.030 μc |   96.715 μc |  111.620 μc |
+
 - compile by rustc 1.53.0 (53cb7b09b 2021-06-17)
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
