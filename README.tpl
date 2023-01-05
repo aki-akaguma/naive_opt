@@ -8,29 +8,15 @@
 
 |         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
 |:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  748.440 μc |  520.660 μc |  753.480 μc |  508.910 μc |
-| std_string_string       |  756.080 μc |  520.690 μc |  757.250 μc |  508.680 μc |
-| func_str_str            |   92.168 μc |  111.290 μc |  110.980 μc |  110.710 μc |
-| func_string_string      |   92.432 μc |  112.260 μc |   93.275 μc |  110.790 μc |
-| trait_str_str           |   87.074 μc |  107.730 μc |  107.540 μc |  106.330 μc |
-| trait_string_string     |   87.373 μc |  107.170 μc |   88.310 μc |  106.250 μc |
-| std_indices             |  470.500 μc |  371.010 μc |  468.910 μc |  374.780 μc |
-| func_indices            |   92.939 μc |  108.660 μc |   92.794 μc |  124.560 μc |
-| trait_indices           |   93.142 μc |  108.450 μc |   92.940 μc |  122.630 μc |
-
-- compile by rustc 1.53.0 (53cb7b09b 2021-06-17)
-
-|         `name`          | `bench:en`  | `bench:ja`  |  `musl:en`  |  `musl:ja`  |
-|:------------------------|------------:|------------:|------------:|------------:|
-| std_str_str             |  597.500 uc |  486.830 uc |  612.780 uc |  494.020 uc |
-| std_string_string       |  596.120 uc |  484.470 uc |  621.090 uc |  521.630 uc |
-| func_str_str            |   92.700 uc |  111.850 uc |   91.712 uc |  113.740 uc |
-| func_string_string      |   92.046 uc |  111.630 uc |   91.629 uc |  114.720 uc |
-| trait_str_str           |   86.913 uc |  107.620 uc |   86.574 uc |  108.830 uc |
-| trait_string_string     |   86.268 uc |  107.420 uc |   87.603 uc |  107.440 uc |
-| std_indices             |  537.580 uc |  403.150 uc |  530.250 uc |  405.990 uc |
-| func_indices            |   87.310 uc |  108.470 uc |   87.587 uc |  109.770 uc |
-| trait_indices           |   87.383 uc |  107.750 uc |   87.895 uc |  109.070 uc |
+| std_str_str             |  757.800 μc |  521.920 μc |  728.020 μc |  520.580 μc |
+| std_string_string       |  760.410 μc |  525.830 μc |  733.070 μc |  536.770 μc |
+| func_str_str            |  102.100 μc |  121.790 μc |  122.460 μc |  122.300 μc |
+| func_string_string      |  101.720 μc |  123.290 μc |  102.760 μc |  121.960 μc |
+| trait_str_str           |   98.238 μc |  120.290 μc |  116.560 μc |  117.960 μc |
+| trait_string_string     |   98.459 μc |  120.490 μc |   98.106 μc |  118.940 μc |
+| std_indices             |  470.700 μc |  370.070 μc |  468.480 μc |  392.680 μc |
+| func_indices            |  100.840 μc |  118.750 μc |  101.620 μc |  146.220 μc |
+| trait_indices           |  100.920 μc |  118.810 μc |  101.070 μc |  145.120 μc |
 
 - std is std::str::find()
 - `us` is micro seconds
