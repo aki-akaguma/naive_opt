@@ -1,6 +1,6 @@
 [package]
 name = "naive_opt"
-version = "0.1.18"
+version = "0.1.19"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 edition = "2021"
 description = "The optimized naive string-search algorithm."
@@ -29,6 +29,9 @@ criterion = "0.4"
 members = [
     "xtask",
 ]
+
+[profile.release]
+lto = true
 
 [[bench]]
 name = "bench-ss-algo"

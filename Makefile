@@ -5,7 +5,9 @@ TARGET_GNU  = --target=x86_64-unknown-linux-gnu
 TARGET_MUSL = --target=x86_64-unknown-linux-musl
 TSK = taskset -c 2
 
-all: README.md
+all: readme
+
+readme: README.md
 
 README.md: README.tpl src/lib.rs
 	cargo readme > $@
