@@ -40,13 +40,13 @@ bench-musl: bench.en.1-musl bench.ja.1-musl
 bench-build-gnu: target/stamp.bench-build-gnu
 
 target/stamp.bench-build-gnu:
-	cargo bench --no-run $(TARGET_GNU)
+	cargo xbench --no-run $(TARGET_GNU)
 	@touch target/stamp.bench-build-gnu
 
 bench-build-musl: target/stamp.bench-build-musl
 
 target/stamp.bench-build-musl:
-	cargo bench --no-run $(TARGET_MUSL)
+	cargo xbench --no-run $(TARGET_MUSL)
 	@touch target/stamp.bench-build-musl
 
 bench-clean:
@@ -58,19 +58,19 @@ report:
 
 bench.en.1-gnu: target/stamp.bench-build-gnu
 	@rm -f z.gnu.bench.en.1.log
-	env AKI_TEST_DAT=en.1 $(TSK) cargo bench $(BENCH_STR) $(TARGET_GNU) -- -n | tee -a z.gnu.bench.en.1.log
+	env AKI_TEST_DAT=en.1 $(TSK) cargo xbench $(BENCH_STR) $(TARGET_GNU) -- -n | tee -a z.gnu.bench.en.1.log
 
 bench.ja.1-gnu: target/stamp.bench-build-gnu
 	@rm -f z.gnu.bench.ja.1.log
-	env AKI_TEST_DAT=ja.1 $(TSK) cargo bench $(BENCH_STR) $(TARGET_GNU) -- -n | tee -a z.gnu.bench.ja.1.log
+	env AKI_TEST_DAT=ja.1 $(TSK) cargo xbench $(BENCH_STR) $(TARGET_GNU) -- -n | tee -a z.gnu.bench.ja.1.log
 
 bench.en.1-musl: target/stamp.bench-build-musl
 	@rm -f z.musl.bench.en.1.log
-	env AKI_TEST_DAT=en.1 $(TSK) cargo bench $(BENCH_STR) $(TARGET_MUSL) -- -n | tee -a z.musl.bench.en.1.log
+	env AKI_TEST_DAT=en.1 $(TSK) cargo xbench $(BENCH_STR) $(TARGET_MUSL) -- -n | tee -a z.musl.bench.en.1.log
 
 bench.ja.1-musl: target/stamp.bench-build-musl
 	@rm -f z.musl.bench.ja.1.log
-	env AKI_TEST_DAT=ja.1 $(TSK) cargo bench $(BENCH_STR) $(TARGET_MUSL) -- -n | tee -a z.musl.bench.ja.1.log
+	env AKI_TEST_DAT=ja.1 $(TSK) cargo xbench $(BENCH_STR) $(TARGET_MUSL) -- -n | tee -a z.musl.bench.ja.1.log
 
 stochastics:
 	(find ~/src/rust/rfcs/text/ -type f -name "*.md" -exec aki-xcat \{\} \; ; find ~/src/data/ietf-rfc/text/ -type f -name "*.txt.gz" -exec aki-xcat \{\} \; ) | aki-stats --map-ascii -X map-ascii-rust-src

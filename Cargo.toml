@@ -21,23 +21,11 @@ only_mc_last = []
 memx = { version="0.1", default-features=false }
 #memx = { git="https://github.com/aki-akaguma/memx.git", default-features=false }
 
-[dev-dependencies]
-criterion = "0.4"
-
 [workspace]
 members = [
+    "xbench",
     "xtask",
 ]
 
 [profile.release]
 lto = true
-
-[[bench]]
-name = "bench-ss-algo"
-path = "benches/bench-ss-algo.rs"
-harness = false
-
-[[bench]]
-name = "bench-ss-algo-indices"
-path = "benches/bench-ss-algo-indices.rs"
-harness = false

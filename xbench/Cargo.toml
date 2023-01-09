@@ -1,0 +1,22 @@
+[package]
+name = "xbench"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.57.0"
+
+[dependencies]
+
+[dev-dependencies]
+naive_opt = { path=".." }
+criterion = "0.4"
+
+
+[[bench]]
+name = "bench-ss-algo"
+path = "benches/bench-ss-algo.rs"
+harness = false
+
+[[bench]]
+name = "bench-ss-algo-indices"
+path = "benches/bench-ss-algo-indices.rs"
+harness = false
