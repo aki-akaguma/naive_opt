@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * `rust-version = "1.56.0"` into `Cargo.toml`
 
+### Fixed
+* clippy: `needless\_borrow`, `unnecessary\_to\_owned`
+* clippy: `search\_is\_some`, `single\_char\_pattern`
+
 
 ## [0.1.21] (2023-01-10)
 ### Added

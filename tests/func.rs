@@ -93,17 +93,17 @@ mod func_str_string {
     use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
-        search_test!("", &"".to_string(), Some(0), Some(0));
-        search_test!("1", &"".to_string(), Some(0), Some(0));
+        search_test!("", "", Some(0), Some(0));
+        search_test!("1", "", Some(0), Some(0));
         let haystack = "111 a 111b";
-        search_test!(haystack, &"".to_string(), Some(0), Some(0));
+        search_test!(haystack, "", Some(0), Some(0));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b";
-        search_test!(haystack, &"xxx".to_string(), None, None);
-        search_test!(haystack, &"12b".to_string(), None, None);
-        search_test!(haystack, &"a31".to_string(), None, None);
+        search_test!(haystack, "xxx", None, None);
+        search_test!(haystack, "12b", None, None);
+        search_test!(haystack, "a31", None, None);
     }
     #[test]
     fn test_perfect_matching() {
@@ -130,16 +130,16 @@ mod func_str_string {
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b";
-        search_test!(haystack, &"b".to_string(), Some(9));
-        search_test!(haystack, &"B".to_string(), None, Some(9));
+        search_test!(haystack, "b", Some(9));
+        search_test!(haystack, "B", None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b";
-        search_test!(haystack, &"a".to_string(), Some(4));
-        search_test!(haystack, &"a 111".to_string(), Some(4));
-        search_test!(haystack, &"A".to_string(), None, Some(4));
-        search_test!(haystack, &"A 111".to_string(), None, Some(4));
+        search_test!(haystack, "a", Some(4));
+        search_test!(haystack, "a 111", Some(4));
+        search_test!(haystack, "A", None, Some(4));
+        search_test!(haystack, "A 111", None, Some(4));
     }
 }
 
@@ -149,8 +149,8 @@ mod func_string_str {
     use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
-        search_test!(&"".to_string(), "", Some(0), Some(0));
-        search_test!(&"1".to_string(), "", Some(0), Some(0));
+        search_test!("", "", Some(0), Some(0));
+        search_test!("1", "", Some(0), Some(0));
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, "", Some(0), Some(0));
     }
@@ -205,17 +205,17 @@ mod func_string_string {
     use naive_opt::{string_search_bytes_ignore_ascii_case, string_search_ignore_ascii_case};
     #[test]
     fn test_empty_needle() {
-        search_test!(&"".to_string(), &"".to_string(), Some(0), Some(0));
-        search_test!(&"1".to_string(), &"".to_string(), Some(0), Some(0));
+        search_test!("", "", Some(0), Some(0));
+        search_test!("1", "", Some(0), Some(0));
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, &"".to_string(), Some(0), Some(0));
+        search_test!(&haystack, "", Some(0), Some(0));
     }
     #[test]
     fn test_not_found() {
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, &"xxx".to_string(), None, None);
-        search_test!(&haystack, &"12b".to_string(), None, None);
-        search_test!(&haystack, &"a31".to_string(), None, None);
+        search_test!(&haystack, "xxx", None, None);
+        search_test!(&haystack, "12b", None, None);
+        search_test!(&haystack, "a31", None, None);
     }
     #[test]
     fn test_perfect_matching() {
@@ -242,16 +242,16 @@ mod func_string_string {
     #[test]
     fn test_last_match() {
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, &"b".to_string(), Some(9));
-        search_test!(&haystack, &"B".to_string(), None, Some(9));
+        search_test!(&haystack, "b", Some(9));
+        search_test!(&haystack, "B", None, Some(9));
     }
     #[test]
     fn test_small_needle() {
         let haystack = "111 a 111b".to_string();
-        search_test!(&haystack, &"a".to_string(), Some(4));
-        search_test!(&haystack, &"a 111".to_string(), Some(4));
-        search_test!(&haystack, &"A".to_string(), None, Some(4));
-        search_test!(&haystack, &"A 111".to_string(), None, Some(4));
+        search_test!(&haystack, "a", Some(4));
+        search_test!(&haystack, "a 111", Some(4));
+        search_test!(&haystack, "A", None, Some(4));
+        search_test!(&haystack, "A 111", None, Some(4));
     }
 }
 

@@ -561,7 +561,7 @@ mod std_from_test_std {
     fn test_pattern_deref_forward() {
         let data = "aabcdaa";
         assert!(data.contains("bcd"));
-        assert!(data.contains(&"bcd"));
+        assert!(data.contains("bcd"));
         assert!(data.contains(&"bcd".to_string()));
     }
     //

@@ -109,8 +109,8 @@ mod std_str_string {
 mod std_string_str {
     #[test]
     fn test_empty_needle() {
-        search_test!(&"".to_string(), "", Some(0)); // ***
-        search_test!(&"1".to_string(), "", Some(0)); // ***
+        search_test!("", "", Some(0)); // ***
+        search_test!("1", "", Some(0)); // ***
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, "", Some(0)); // ***
     }
@@ -156,8 +156,8 @@ mod std_string_str {
 mod std_string_string {
     #[test]
     fn test_empty_needle() {
-        search_test!(&"".to_string(), &"".to_string(), Some(0)); // ***
-        search_test!(&"1".to_string(), &"".to_string(), Some(0)); // ***
+        search_test!("", &"".to_string(), Some(0)); // ***
+        search_test!("1", &"".to_string(), Some(0)); // ***
         let haystack = "111 a 111b".to_string();
         search_test!(&haystack, &"".to_string(), Some(0)); // ***
     }
@@ -310,17 +310,17 @@ mod std_from_test_std {
     fn test_find_str() {
         // byte positions
         assert_eq!("".find(""), Some(0));
-        assert!("banana".find("apple pie").is_none());
+        assert!(!"banana".contains("apple pie"));
         //
         let data = "abcabc";
         assert_eq!(data[0..6].find("ab"), Some(0));
         assert_eq!(data[2..6].find("ab"), Some(3 - 2));
-        assert!(data[2..4].find("ab").is_none());
+        assert!(!data[2..4].contains("ab"));
         //
         let string = "ประเทศไทย中华Việt Nam";
         let mut data = String::from(string);
         data.push_str(string);
-        assert!(data.find("ไท华").is_none());
+        assert!(!data.contains("ไท华"));
         assert_eq!(data[0..43].find(""), Some(0));
         assert_eq!(data[6..43].find(""), Some(6 - 6));
         //
@@ -366,7 +366,7 @@ mod std_from_test_std {
         assert!("abcde".contains(""));
         assert!("".contains(""));
         assert!(!"abcde".contains("def"));
-        assert!(!"".contains("a"));
+        assert!(!"".contains('a'));
         //
         let data = "ประเทศไทย中华Việt Nam";
         assert!(data.contains("ประเ"));
@@ -387,7 +387,7 @@ mod std_from_test_std {
     fn test_pattern_deref_forward() {
         let data = "aabcdaa";
         assert!(data.contains("bcd"));
-        assert!(data.contains(&"bcd"));
+        assert!(data.contains("bcd"));
         assert!(data.contains(&"bcd".to_string()));
     }
     //
