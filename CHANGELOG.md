@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] *
+## [Unreleased]
+
+
+## [0.1.22] (2023-01-31)
 ### Added
 * `test_diskstats()` into `func.rs`
 * `.github/workflows/test-ubuntu.yml`
@@ -17,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * clippy: `needless\_borrow`, `unnecessary\_to\_owned`
 * clippy: `search\_is\_some`, `single\_char\_pattern`
-
 
 ## [0.1.21] (2023-01-10)
 ### Added
@@ -145,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] (2021-03-17)
 * first commit
 
-[Unreleased]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.21..HEAD
+[Unreleased]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.22..HEAD
+[0.1.22]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.21..v0.1.22
 [0.1.21]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.20..v0.1.21
 [0.1.20]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.19..v0.1.20
 [0.1.19]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.18..v0.1.19
