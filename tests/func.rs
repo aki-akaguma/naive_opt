@@ -294,8 +294,8 @@ mod func_string_string {
 ".to_string();
         search_test!(&haystack, "\n", Some(59));
         search_test!(&haystack[60..], "\n", Some(74));
-        search_test!(&haystack[(60+75)..], "\n", Some(59));
-        search_test!(&haystack[(60+75+60)..], "\n", Some(61));
+        search_test!(&haystack[(60 + 75)..], "\n", Some(59));
+        search_test!(&haystack[(60 + 75 + 60)..], "\n", Some(61));
         search_test!(&haystack, "sda2", Some(1100));
         search_test!(&haystack, "sdc3", Some(1847));
         search_test!(&haystack, "sdd", Some(2426));
