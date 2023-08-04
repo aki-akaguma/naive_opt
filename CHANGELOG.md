@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.1.24] (2023-08-04)
+### Changed
+* rename: `memchr_double_iter` to `::memx::iter::memchr_dbl_iter`
+* rename: `memrchr_double_iter` to `::memx::iter::memrchr_dbl_iter`
+
 ## [0.1.23] (2023-02-13)
 ### Changed
 * refactored `Makefile`
@@ -159,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] (2021-03-17)
 * first commit
 
-[Unreleased]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.23..HEAD
+[Unreleased]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.24..HEAD
+[0.1.24]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.23..v0.1.24
 [0.1.23]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.22..v0.1.23
 [0.1.22]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.21..v0.1.22
 [0.1.21]: https://github.com/aki-akaguma/naive_opt/compare/v0.1.20..v0.1.21

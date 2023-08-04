@@ -67,7 +67,7 @@ pub(crate) fn naive_opt_mc_last_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) ->
     let byte_last = nee_bytes[last_idx];
     let byte_last_uc = byte_last.to_ascii_uppercase();
     let byte_last_lc = byte_last.to_ascii_lowercase();
-    for m in ::memx::iter::memchr_double_iter(&hay_bytes[last_idx..], byte_last_uc, byte_last_lc) {
+    for m in ::memx::iter::memchr_dbl_iter(&hay_bytes[last_idx..], byte_last_uc, byte_last_lc) {
         let st = m;
         let ed = st + nee_len;
         if ed > hay_len {
@@ -97,7 +97,7 @@ pub(crate) fn naive_opt_mc_last_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]
     let byte_last = nee_bytes[last_idx];
     let byte_last_uc = byte_last.to_ascii_uppercase();
     let byte_last_lc = byte_last.to_ascii_lowercase();
-    for m in ::memx::iter::memrchr_double_iter(&hay_bytes[last_idx..], byte_last_uc, byte_last_lc) {
+    for m in ::memx::iter::memrchr_dbl_iter(&hay_bytes[last_idx..], byte_last_uc, byte_last_lc) {
         let st = m;
         let ed = st + nee_len;
         if ed > hay_len {
