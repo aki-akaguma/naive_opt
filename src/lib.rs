@@ -916,19 +916,19 @@ impl<'a, 'b> SearchIn<'a> for &'b String {
 impl<'a> SearchIn<'a> for char {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_bytes(haystack.as_bytes(), self.to_string().as_str().as_bytes())
+        naive_opt_mc_bytes(haystack.as_bytes(), self.to_string().as_bytes())
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_rev_bytes(haystack.as_bytes(), self.to_string().as_str().as_bytes())
+        naive_opt_mc_rev_bytes(haystack.as_bytes(), self.to_string().as_bytes())
     }
     #[inline]
     fn search_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_bytes_iac(haystack.as_bytes(), self.to_string().as_str().as_bytes())
+        naive_opt_mc_bytes_iac(haystack.as_bytes(), self.to_string().as_bytes())
     }
     #[inline]
     fn rsearch_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), self.to_string().as_str().as_bytes())
+        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), self.to_string().as_bytes())
     }
     #[inline]
     fn len(&self) -> usize {
