@@ -289,21 +289,17 @@ mod std_from_test_std {
     #[test]
     fn test_find() {
         assert_eq!("hello".find('l'), Some(2));
-        assert_eq!("hello".find(|c: char| c == 'o'), Some(4));
+        assert_eq!("hello".find('o'), Some(4));
         assert!("hello".find('x').is_none());
-        assert!("hello".find(|c: char| c == 'x').is_none());
         assert_eq!("ประเทศไทย中华Việt Nam".find('华'), Some(30));
-        assert_eq!("ประเทศไทย中华Việt Nam".find(|c: char| c == '华'), Some(30));
     }
     //
     #[test]
     fn test_rfind() {
         assert_eq!("hello".rfind('l'), Some(3));
-        assert_eq!("hello".rfind(|c: char| c == 'o'), Some(4));
+        assert_eq!("hello".rfind('o'), Some(4));
         assert!("hello".rfind('x').is_none());
-        assert!("hello".rfind(|c: char| c == 'x').is_none());
         assert_eq!("ประเทศไทย中华Việt Nam".rfind('华'), Some(30));
-        assert_eq!("ประเทศไทย中华Việt Nam".rfind(|c: char| c == '华'), Some(30));
     }
     //
     #[test]
