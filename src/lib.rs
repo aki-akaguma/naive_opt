@@ -206,7 +206,7 @@ pub trait Search {
     ///
     fn includes_ignore_ascii_case<'a, P: SearchIn<'a>>(&'a self, needle: P) -> bool;
 }
-impl<'c> Search for &'c str {
+impl Search for &str {
     #[inline]
     fn search<'a, P: SearchIn<'a>>(&'a self, needle: P) -> Option<usize> {
         needle.search_in(self)
@@ -338,7 +338,7 @@ pub trait SearchBytes {
         P: SearchInBytes<'a>;
     fn includes_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> bool;
 }
-impl<'c> SearchBytes for &'c [u8] {
+impl SearchBytes for &[u8] {
     #[inline]
     fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
         needle.search_in(self)
@@ -405,7 +405,7 @@ impl<'c> SearchBytes for &'c [u8] {
         needle.includes_in_ignore_ascii_case(self)
     }
 }
-impl<'c> SearchBytes for &'c str {
+impl SearchBytes for &str {
     #[inline]
     fn search_bytes<'a, P: SearchInBytes<'a>>(&'a self, needle: P) -> Option<usize> {
         needle.search_in(self.as_bytes())
@@ -869,7 +869,7 @@ pub trait SearchIn<'a>: Sized {
         self.search_in_ignore_ascii_case(haystack).is_some()
     }
 }
-impl<'a, 'b> SearchIn<'a> for &'b str {
+impl<'a> SearchIn<'a> for &str {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
         naive_opt_mc_bytes(haystack.as_bytes(), self.as_bytes())
@@ -891,7 +891,7 @@ impl<'a, 'b> SearchIn<'a> for &'b str {
         self.as_bytes().len()
     }
 }
-impl<'a, 'b> SearchIn<'a> for &'b String {
+impl<'a> SearchIn<'a> for &String {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
         naive_opt_mc_bytes(haystack.as_bytes(), self.as_str().as_bytes())
@@ -954,7 +954,7 @@ pub trait SearchInBytes<'a>: Sized {
         self.search_in_ignore_ascii_case(haystack).is_some()
     }
 }
-impl<'a, 'b> SearchInBytes<'a> for &'b [u8] {
+impl<'a> SearchInBytes<'a> for &[u8] {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
         naive_opt_mc_bytes(haystack, self)
@@ -980,7 +980,7 @@ impl<'a, 'b> SearchInBytes<'a> for &'b [u8] {
 fn u8_len(a: &[u8]) -> usize {
     a.len()
 }
-impl<'a, 'b> SearchInBytes<'a> for &'b str {
+impl<'a> SearchInBytes<'a> for &str {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
         naive_opt_mc_bytes(haystack, self.as_bytes())
@@ -1002,7 +1002,7 @@ impl<'a, 'b> SearchInBytes<'a> for &'b str {
         self.as_bytes().len()
     }
 }
-impl<'a, 'b> SearchInBytes<'a> for &'b String {
+impl<'a> SearchInBytes<'a> for &String {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
         naive_opt_mc_bytes(haystack, self.as_bytes())
