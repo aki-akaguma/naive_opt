@@ -6,19 +6,11 @@ pub fn run(_program: &str, _args: &[&str]) -> anyhow::Result<()> {
     let mut bench_vec_2 = get_bench("z.gnu.bench.ja.1.log")?;
     let mut bench_vec_3 = {
         let r = get_bench("z.musl.bench.en.1.log");
-        if let Ok(a) = r {
-            a
-        } else {
-            Vec::new()
-        }
+        r.unwrap_or_default()
     };
     let mut bench_vec_4 = {
         let r = get_bench("z.musl.bench.ja.1.log");
-        if let Ok(a) = r {
-            a
-        } else {
-            Vec::new()
-        }
+        r.unwrap_or_default()
     };
     //set_size(&mut bench_vec, "z.size-release.curl.log")?;
     bench_vec_2.sort_by(|a, b| a.name.cmp(&b.name));
@@ -155,10 +147,10 @@ pub struct BenchStr {
     pub name: String,   // name
     pub time: f64,      // seconds
     pub is_cycle: bool, // cycles
-    pub time_1k: f64,   // seconds per 1k
-    pub size: u64,      // bytes
-    pub oh_time: f64,   // seconds
-    pub oh_size: u64,   // bytes
+    pub _time_1k: f64,  // seconds per 1k
+    pub _size: u64,     // bytes
+    pub _oh_time: f64,  // seconds
+    pub _oh_size: u64,  // bytes
 }
 
 fn _set_size(bench_vec: &mut Vec<BenchStr>, in_file: &str) -> anyhow::Result<()> {
@@ -186,17 +178,17 @@ fn _set_size(bench_vec: &mut Vec<BenchStr>, in_file: &str) -> anyhow::Result<()>
                     return Err(anyhow::Error::msg(msg));
                 }
             };
-            bench_vec[i].size = size_s.parse::<u64>()?;
+            bench_vec[i]._size = size_s.parse::<u64>()?;
             if name == "cmp_null_void" {
                 base_time = bench_vec[i].time;
-                base_size = bench_vec[i].size;
+                base_size = bench_vec[i]._size;
             }
         }
     }
     //
     for bench in bench_vec {
-        bench.oh_time = bench.time - base_time;
-        bench.oh_size = bench.size - base_size;
+        bench._oh_time = bench.time - base_time;
+        bench._oh_size = bench._size - base_size;
     }
     //
     Ok(())
@@ -220,7 +212,7 @@ fn get_bench(in_file: &str) -> anyhow::Result<Vec<BenchStr>> {
             let nm = normalize_name(&caps[1])?;
             let tm = normalize_time(&caps[2], &caps[3])?;
             let is_cycle = &caps[3] == "cycles";
-            let time_1k = if nm.ends_with("^01k") {
+            let _time_1k = if nm.ends_with("^01k") {
                 tm
             } else if nm.ends_with("^08k") {
                 tm / 8.0
@@ -234,7 +226,7 @@ fn get_bench(in_file: &str) -> anyhow::Result<Vec<BenchStr>> {
                 name: nm,
                 time: tm,
                 is_cycle,
-                time_1k,
+                _time_1k,
                 ..BenchStr::default()
             });
         }
