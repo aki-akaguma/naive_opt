@@ -888,6 +888,7 @@ impl<'a> SearchIn<'a> for &str {
     }
     #[inline]
     fn len(&self) -> usize {
+        #[allow(clippy::needless_as_bytes)]
         self.as_bytes().len()
     }
 }
@@ -932,7 +933,7 @@ impl<'a> SearchIn<'a> for char {
     }
     #[inline]
     fn len(&self) -> usize {
-        self.to_string().as_bytes().len()
+        self.to_string().len()
     }
 }
 
@@ -999,6 +1000,7 @@ impl<'a> SearchInBytes<'a> for &str {
     }
     #[inline]
     fn len(&self) -> usize {
+        #[allow(clippy::needless_as_bytes)]
         self.as_bytes().len()
     }
 }
@@ -1043,7 +1045,7 @@ impl<'a> SearchInBytes<'a> for char {
     }
     #[inline]
     fn len(&self) -> usize {
-        self.to_string().as_bytes().len()
+        self.to_string().len()
     }
 }
 
