@@ -561,6 +561,9 @@ impl<'a, P: SearchIn<'a>> Iterator for SearchIndices<'a, P> {
     type Item = (usize, &'a str);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self.needle.search_in(&self.haystack[self.curr_idx..]) {
             Some(idx) => {
                 self.curr_idx += idx;
@@ -592,6 +595,9 @@ impl<'a, P: SearchInBytes<'a>> Iterator for SearchIndicesBytes<'a, P> {
     type Item = (usize, &'a [u8]);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self.needle.search_in(&self.haystack[self.curr_idx..]) {
             Some(idx) => {
                 self.curr_idx += idx;
@@ -626,6 +632,9 @@ impl<'a, P: SearchIn<'a>> Iterator for RevSearchIndices<'a, P> {
     type Item = (usize, &'a str);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self.needle.rsearch_in(&self.haystack[0..self.curr_ed]) {
             Some(idx) => {
                 let st = idx;
@@ -656,6 +665,9 @@ impl<'a, P: SearchInBytes<'a>> Iterator for RevSearchIndicesBytes<'a, P> {
     type Item = (usize, &'a [u8]);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self.needle.rsearch_in(&self.haystack[0..self.curr_ed]) {
             Some(idx) => {
                 let st = idx;
@@ -689,6 +701,9 @@ impl<'a, P: SearchIn<'a>> Iterator for SearchIndicesIgnoreAsciiCase<'a, P> {
     type Item = (usize, &'a str);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self
             .needle
             .search_in_ignore_ascii_case(&self.haystack[self.curr_idx..])
@@ -723,6 +738,9 @@ impl<'a, P: SearchInBytes<'a>> Iterator for SearchIndicesBytesIgnoreAsciiCase<'a
     type Item = (usize, &'a [u8]);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self
             .needle
             .search_in_ignore_ascii_case(&self.haystack[self.curr_idx..])
@@ -760,6 +778,9 @@ impl<'a, P: SearchIn<'a>> Iterator for RevSearchIndicesIgnoreAsciiCase<'a, P> {
     type Item = (usize, &'a str);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self
             .needle
             .rsearch_in_ignore_ascii_case(&self.haystack[0..self.curr_ed])
@@ -793,6 +814,9 @@ impl<'a, P: SearchInBytes<'a>> Iterator for RevSearchIndicesBytesIgnoreAsciiCase
     type Item = (usize, &'a [u8]);
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
+        if self.needle.is_empty() {
+            return None;
+        }
         match self
             .needle
             .rsearch_in_ignore_ascii_case(&self.haystack[0..self.curr_ed])
@@ -1083,6 +1107,28 @@ pub fn string_search_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
 ///
 pub fn string_rsearch_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
     naive_opt_mc_rev_bytes(haystack, needle)
+}
+
+///
+/// includes the needle in the haystack bytes.
+///
+/// returns true if the given pattern matches a sub-slice of this string slice.
+/// returns false if it does not.
+///
+#[inline]
+pub fn includes_bytes(haystack: &[u8], needle: &[u8]) -> bool {
+    string_search_bytes(haystack, needle).is_some()
+}
+
+///
+/// includes the needle in the haystack bytes, ignore ascii case.
+///
+/// returns true if the given pattern matches a sub-slice of this string slice.
+/// returns false if it does not.
+///
+#[inline]
+pub fn includes_bytes_ignore_ascii_case(haystack: &[u8], needle: &[u8]) -> bool {
+    string_search_bytes_ignore_ascii_case(haystack, needle).is_some()
 }
 
 ///
