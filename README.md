@@ -18,7 +18,7 @@ The optimized naive string-search algorithm.
 - The ASCII Stochastics search
 - Support the zero overhead trait.
 - Support ignore ascii case match.
-- minimum support rustc 1.56.1 (59eed8a2a 2021-11-01)
+- minimum support rustc 1.65.0 (897e37553 2022-11-02)
 
 ## Compatibility
 
@@ -173,7 +173,7 @@ at your option.
 [crate-link]: https://crates.io/crates/naive_opt
 [docs-image]: https://docs.rs/naive_opt/badge.svg
 [docs-link]: https://docs.rs/naive_opt/
-[rustc-image]: https://img.shields.io/badge/rustc-1.56+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.65+-blue.svg
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [test-ubuntu-image]: https://github.com/aki-akaguma/naive_opt/actions/workflows/test-ubuntu.yml/badge.svg
 [test-ubuntu-link]: https://github.com/aki-akaguma/naive_opt/actions/workflows/test-ubuntu.yml

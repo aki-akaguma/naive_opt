@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * update: memx(0.2.0)
+* rust-version = "1.65.0"
 
 ### Fixed
 bug: case of the needle is empty on `SearchIndices`

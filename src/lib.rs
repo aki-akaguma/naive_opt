@@ -9,7 +9,7 @@ The optimized naive string-search algorithm.
 - The ASCII Stochastics search
 - Support the zero overhead trait.
 - Support ignore ascii case match.
-- minimum support rustc 1.56.1 (59eed8a2a 2021-11-01)
+- minimum support rustc 1.65.0 (897e37553 2022-11-02)
 
 # Compatibility
 
