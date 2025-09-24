@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 * `specs`
+* `includes_bytes()`
+* `includes_bytes_ignore_ascii_case()`
+* more tests
 
+### Fixed
+bug: case of the needle is empty on `SearchIndices`
 
 ## [0.1.25] (2024-06-18)
 ### Changed
