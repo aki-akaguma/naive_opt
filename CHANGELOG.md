@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `includes_bytes_ignore_ascii_case()`
 * more tests
 
+### Changed
+* update: memx(0.2.0)
+
 ### Fixed
 bug: case of the needle is empty on `SearchIndices`
 
