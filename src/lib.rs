@@ -1290,6 +1290,15 @@ pub fn string_rsearch_indices_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(
 // This code do stochastics using by the 1st byte and last byte.
 //
 
+/*
+ * Inlining Strategy:
+ *
+ * - #[inline(always)]: Used for "Switchboard" dispatchers (to collapse cfgs and empty checks),
+ *   tiny wrappers (u8_len), and critical iterator methods (next) to ensure zero-cost abstraction.
+ * - #[inline]: Used for most public API functions and shared logic (prefer_1st_strategy)
+ *   to allow cross-crate inlining while letting the compiler optimize for binary size.
+ */
+
 mod mc_generic;
 
 #[cfg(not(feature = "only_mc_last"))]
@@ -1297,6 +1306,23 @@ mod mc_1st;
 
 #[cfg(not(feature = "only_mc_1st"))]
 mod mc_last;
+
+///
+/// Internal helper to decide whether to use 1st-byte search or last-byte search
+/// based on ASCII frequency stochastics.
+///
+#[inline]
+fn prefer_1st_strategy(nee_bytes: &[u8]) -> bool {
+    let byte_1st = nee_bytes[0];
+    let byte_last = nee_bytes[nee_bytes.len() - 1];
+    if byte_1st.is_ascii() && byte_last.is_ascii() {
+        let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
+        let weight_last = _ASCII_STOCHAS[byte_last as usize];
+        weight_1st <= weight_last
+    } else {
+        false // default to mc_last for non-ascii
+    }
+}
 
 #[inline(always)]
 fn naive_opt_mc_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
@@ -1313,16 +1339,8 @@ fn naive_opt_mc_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
         if nee_bytes.is_empty() {
             return Some(0);
         }
-        let byte_1st = nee_bytes[0];
-        let byte_last = nee_bytes[nee_bytes.len() - 1];
-        if byte_1st.is_ascii() && byte_last.is_ascii() {
-            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
-            let weight_last = _ASCII_STOCHAS[byte_last as usize];
-            if weight_1st <= weight_last {
-                mc_1st::naive_opt_mc_1st_bytes(hay_bytes, nee_bytes)
-            } else {
-                mc_last::naive_opt_mc_last_bytes(hay_bytes, nee_bytes)
-            }
+        if prefer_1st_strategy(nee_bytes) {
+            mc_1st::naive_opt_mc_1st_bytes(hay_bytes, nee_bytes)
         } else {
             mc_last::naive_opt_mc_last_bytes(hay_bytes, nee_bytes)
         }
@@ -1344,16 +1362,8 @@ fn naive_opt_mc_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
         if nee_bytes.is_empty() {
             return Some(hay_bytes.len());
         }
-        let byte_1st = nee_bytes[0];
-        let byte_last = nee_bytes[nee_bytes.len() - 1];
-        if byte_1st.is_ascii() && byte_last.is_ascii() {
-            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
-            let weight_last = _ASCII_STOCHAS[byte_last as usize];
-            if weight_1st <= weight_last {
-                mc_1st::naive_opt_mc_1st_rev_bytes(hay_bytes, nee_bytes)
-            } else {
-                mc_last::naive_opt_mc_last_rev_bytes(hay_bytes, nee_bytes)
-            }
+        if prefer_1st_strategy(nee_bytes) {
+            mc_1st::naive_opt_mc_1st_rev_bytes(hay_bytes, nee_bytes)
         } else {
             mc_last::naive_opt_mc_last_rev_bytes(hay_bytes, nee_bytes)
         }
@@ -1384,23 +1394,15 @@ fn naive_opt_mc_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
         if nee_bytes.is_empty() {
             return Some(0);
         }
-        let byte_1st = nee_bytes[0];
-        let byte_last = nee_bytes[nee_bytes.len() - 1];
-        if byte_1st.is_ascii() && byte_last.is_ascii() {
-            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
-            let weight_last = _ASCII_STOCHAS[byte_last as usize];
-            if weight_1st <= weight_last {
-                mc_1st::naive_opt_mc_1st_bytes_iac(hay_bytes, nee_bytes)
-            } else {
-                mc_last::naive_opt_mc_last_bytes_iac(hay_bytes, nee_bytes)
-            }
+        if prefer_1st_strategy(nee_bytes) {
+            mc_1st::naive_opt_mc_1st_bytes_iac(hay_bytes, nee_bytes)
         } else {
             mc_last::naive_opt_mc_last_bytes_iac(hay_bytes, nee_bytes)
         }
     }
 }
 
-#[inline]
+#[inline(always)]
 fn naive_opt_mc_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     #[cfg(feature = "only_mc_1st")]
     {
@@ -1415,18 +1417,11 @@ fn naive_opt_mc_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usiz
         if nee_bytes.is_empty() {
             return Some(hay_bytes.len());
         }
-        let byte_1st = nee_bytes[0];
-        let byte_last = nee_bytes[nee_bytes.len() - 1];
-        if byte_1st.is_ascii() && byte_last.is_ascii() {
-            let weight_1st = _ASCII_STOCHAS[byte_1st as usize];
-            let weight_last = _ASCII_STOCHAS[byte_last as usize];
-            if weight_1st <= weight_last {
-                mc_1st::naive_opt_mc_1st_rev_bytes_iac(hay_bytes, nee_bytes)
-            } else {
-                mc_last::naive_opt_mc_last_rev_bytes_iac(hay_bytes, nee_bytes)
-            }
+        if prefer_1st_strategy(nee_bytes) {
+            mc_1st::naive_opt_mc_1st_rev_bytes_iac(hay_bytes, nee_bytes)
         } else {
             mc_last::naive_opt_mc_last_rev_bytes_iac(hay_bytes, nee_bytes)
         }
     }
 }
+
