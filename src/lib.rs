@@ -941,23 +941,31 @@ impl<'a> SearchIn<'a> for &String {
 impl<'a> SearchIn<'a> for char {
     #[inline]
     fn search_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_bytes(haystack.as_bytes(), self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_bytes(haystack.as_bytes(), nee_bytes)
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_rev_bytes(haystack.as_bytes(), self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_rev_bytes(haystack.as_bytes(), nee_bytes)
     }
     #[inline]
     fn search_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_bytes_iac(haystack.as_bytes(), self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_bytes_iac(haystack.as_bytes(), nee_bytes)
     }
     #[inline]
     fn rsearch_in_ignore_ascii_case(&self, haystack: &'a str) -> Option<usize> {
-        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_rev_bytes_iac(haystack.as_bytes(), nee_bytes)
     }
     #[inline]
     fn len(&self) -> usize {
-        self.to_string().len()
+        self.len_utf8()
     }
 }
 
@@ -1053,23 +1061,31 @@ impl<'a> SearchInBytes<'a> for &String {
 impl<'a> SearchInBytes<'a> for char {
     #[inline]
     fn search_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_bytes(haystack, self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_bytes(haystack, nee_bytes)
     }
     #[inline]
     fn rsearch_in(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_rev_bytes(haystack, self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_rev_bytes(haystack, nee_bytes)
     }
     #[inline]
     fn search_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_bytes_iac(haystack, self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_bytes_iac(haystack, nee_bytes)
     }
     #[inline]
     fn rsearch_in_ignore_ascii_case(&self, haystack: &'a [u8]) -> Option<usize> {
-        naive_opt_mc_rev_bytes_iac(haystack, self.to_string().as_bytes())
+        let mut buf = [0u8; 4];
+        let nee_bytes = self.encode_utf8(&mut buf).as_bytes();
+        naive_opt_mc_rev_bytes_iac(haystack, nee_bytes)
     }
     #[inline]
     fn len(&self) -> usize {
-        self.to_string().len()
+        self.len_utf8()
     }
 }
 

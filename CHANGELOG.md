@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * `make list` into `Makefile`
 
+### Changed
+* optimized `char` search to be zero-allocation by using `encode_utf8` with a stack buffer instead of `to_string()`
+
 ### Fixed
 * `clippy::useless_concat`
 
