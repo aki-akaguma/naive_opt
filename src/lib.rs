@@ -1290,6 +1290,8 @@ pub fn string_rsearch_indices_bytes_ignore_ascii_case<'a, P: SearchInBytes<'a>>(
 // This code do stochastics using by the 1st byte and last byte.
 //
 
+mod mc_generic;
+
 #[cfg(not(feature = "only_mc_last"))]
 mod mc_1st;
 
