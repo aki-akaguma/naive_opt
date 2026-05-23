@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+* `make list` into `Makefile`
+
+### Fixed
+* `clippy::useless_concat`
 
 
 ## [0.2.0] (2025-09-24)
@@ -29,7 +34,7 @@ bug: case of the needle is empty on `SearchIndices`
 * test and build support 1.60.0 on github workflows
 
 ### Fixed
-* clippy: redundant_as_str
+* `clippy::redundant_as_str`
 
 ## [0.1.24] (2023-08-04)
 ### Changed
@@ -45,8 +50,10 @@ bug: case of the needle is empty on `SearchIndices`
 
 ### Fixed
 * `LICENSE-APACHE`, `LICENSE-MIT`
-* clippy: `redundant_field_names`, `unnecessary_unwrap`, `needless_bool`
-* clippy: `uninlined_format_args`
+* `clippy::redundant_field_names`
+* `clippy::unnecessary_unwrap`
+* `clippy::needless_bool`
+* `clippy::uninlined_format_args`
 
 ## [0.1.22] (2023-01-31)
 ### Added
@@ -58,8 +65,10 @@ bug: case of the needle is empty on `SearchIndices`
 * `rust-version = "1.56.0"` into `Cargo.toml`
 
 ### Fixed
-* clippy: `needless_borrow`, `unnecessary_to_owned`
-* clippy: `search_is_some`, `single_char_pattern`
+* `clippy::needless_borrow`
+* `clippy::unnecessary_to_owned`
+* `clippy::search_is_some`
+* `clippy::single_char_pattern`
 
 ## [0.1.21] (2023-01-10)
 ### Added
