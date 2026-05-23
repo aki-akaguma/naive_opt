@@ -1,4 +1,4 @@
-#[inline(always)]
+#[inline]
 pub(crate) fn naive_opt_mc_1st_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     let hay_len = hay_bytes.len();
     let nee_len = nee_bytes.len();
@@ -24,7 +24,7 @@ pub(crate) fn naive_opt_mc_1st_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Opti
     None
 }
 
-#[inline(always)]
+#[inline]
 pub(crate) fn naive_opt_mc_1st_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     let hay_len = hay_bytes.len();
     let nee_len = nee_bytes.len();
@@ -50,7 +50,7 @@ pub(crate) fn naive_opt_mc_1st_rev_bytes(hay_bytes: &[u8], nee_bytes: &[u8]) -> 
     None
 }
 
-#[inline(always)]
+#[inline]
 pub(crate) fn naive_opt_mc_1st_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     let hay_len = hay_bytes.len();
     let nee_len = nee_bytes.len();
@@ -79,7 +79,7 @@ pub(crate) fn naive_opt_mc_1st_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> 
     None
 }
 
-#[inline(always)]
+#[inline]
 pub(crate) fn naive_opt_mc_1st_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     let hay_len = hay_bytes.len();
     let nee_len = nee_bytes.len();

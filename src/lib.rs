@@ -1398,7 +1398,7 @@ fn naive_opt_mc_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     }
 }
 
-#[inline(always)]
+#[inline]
 fn naive_opt_mc_rev_bytes_iac(hay_bytes: &[u8], nee_bytes: &[u8]) -> Option<usize> {
     #[cfg(feature = "only_mc_1st")]
     {
