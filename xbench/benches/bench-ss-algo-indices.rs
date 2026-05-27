@@ -1,5 +1,6 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 use naive_opt::Search;
+use std::hint::black_box;
 
 #[inline(never)]
 fn process_std_str_str(texts: &[&str], pattern: &str) -> usize {
