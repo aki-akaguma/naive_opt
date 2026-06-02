@@ -1,215 +1,210 @@
 # Changelog: naive_opt
-
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-
-## [0.2.2] (2026-05-27)
+## [0.2.2] - 2026-05-27
 ### Changed
-* xbench: update crate: criterion(0.8)
+- Update `criterion` crate to 0.8 in `xbench`.
 
-## [0.2.1] (2026-05-24)
+## [0.2.1] - 2026-05-24
 ### Added
-* `make list` into `Makefile`
-* formalized Inlining Strategy documentation in `src/lib.rs` to guide future development
+- `make list` to `Makefile`.
+- Formal Inlining Strategy documentation in `src/lib.rs` to guide future development.
 
 ### Changed
-* optimized `char` search to be zero-allocation by using `encode_utf8` with a stack buffer instead of `to_string()`
-* refined inlining strategy:
-    - maintained `#[inline(always)]` for dispatchers and critical iterator methods for zero-cost abstraction
-    - adopted `#[inline]` for core logic and shared helpers to optimize binary size and compiler flexibility
-* refactored `mc_1st` and `mc_last` to use unified generic search logic in `mc_generic`, significantly reducing code duplication
-* consolidated ASCII stochastics decision logic into a shared `prefer_1st_strategy` helper for better maintainability
+- Optimize `char` search to be zero-allocation by using `encode_utf8` with a stack buffer instead of `to_string()`.
+- Refine inlining strategy (maintain `#[inline(always)]` for dispatchers and critical iterator methods; adopt `#[inline]` for core logic and shared helpers).
+- Refactor `mc_1st` and `mc_last` to use unified generic search logic in `mc_generic`, significantly reducing code duplication.
+- Consolidate ASCII stochastics decision logic into a shared `prefer_1st_strategy` helper for better maintainability.
 
 ### Fixed
-* `clippy::useless_concat`
+- Clippy warning `useless_concat`.
 
-## [0.2.0] (2025-09-24)
+## [0.2.0] - 2025-09-24
 ### Added
-* `specs`
-* `includes_bytes()`
-* `includes_bytes_ignore_ascii_case()`
-* more tests
+- Project specifications in `specs/`.
+- `includes_bytes()` function.
+- `includes_bytes_ignore_ascii_case()` function.
+- Additional tests.
 
 ### Changed
-* update: memx(0.2.0)
-* rust-version = "1.65.0"
+- Update `memx` to 0.2.0.
+- Set `rust-version` to "1.65.0".
 
 ### Fixed
-bug: case of the needle is empty on `SearchIndices`
+- Issue where `SearchIndices` failed when the needle was empty.
 
-## [0.1.25] (2024-06-18)
+## [0.1.25] - 2024-06-18
 ### Changed
-* rename: `config` to `config.toml`
-* update crates: criterion (0.5.1)
-* test and build support 1.60.0 on github workflows
+- Rename `config` to `config.toml`.
+- Update `criterion` crate to 0.5.1.
+- Support for Rust 1.60.0 in GitHub workflows.
 
 ### Fixed
-* `clippy::redundant_as_str`
+- Clippy warning `redundant_as_str`.
 
-## [0.1.24] (2023-08-04)
+## [0.1.24] - 2023-08-04
 ### Changed
-* rename: `memchr_double_iter` to `::memx::iter::memchr_dbl_iter`
-* rename: `memrchr_double_iter` to `::memx::iter::memrchr_dbl_iter`
+- Rename `memchr_double_iter` to `::memx::iter::memchr_dbl_iter`.
+- Rename `memrchr_double_iter` to `::memx::iter::memrchr_dbl_iter`.
 
-## [0.1.23] (2023-02-13)
+## [0.1.23] - 2023-02-13
 ### Changed
-* refactored `Makefile`
+- Refactor `Makefile`.
 
 ### Removed
-* `COPYING`
+- `COPYING` file.
 
 ### Fixed
-* `LICENSE-APACHE`, `LICENSE-MIT`
-* `clippy::redundant_field_names`
-* `clippy::unnecessary_unwrap`
-* `clippy::needless_bool`
-* `clippy::uninlined_format_args`
+- `LICENSE-APACHE` and `LICENSE-MIT` files.
+- Clippy warning `redundant_field_names`.
+- Clippy warning `unnecessary_unwrap`.
+- Clippy warning `needless_bool`.
+- Clippy warning `uninlined_format_args`.
 
-## [0.1.22] (2023-01-31)
+## [0.1.22] - 2023-01-31
 ### Added
-* `test_diskstats()` into `func.rs`
-* `.github/workflows/test-ubuntu.yml`
-* `.github/workflows/test-macos.yml`
-* `.github/workflows/test-windows.yml`
-* test status badges into `README.tpl`
-* `rust-version = "1.56.0"` into `Cargo.toml`
+- `test_diskstats()` in `func.rs`.
+- GitHub workflows for Ubuntu, macOS, and Windows.
+- Test status badges in `README.tpl`.
+- Minimum supported Rust version (MSRV) 1.56.0 in `Cargo.toml`.
 
 ### Fixed
-* `clippy::needless_borrow`
-* `clippy::unnecessary_to_owned`
-* `clippy::search_is_some`
-* `clippy::single_char_pattern`
+- Clippy warning `needless_borrow`.
+- Clippy warning `unnecessary_to_owned`.
+- Clippy warning `search_is_some`.
+- Clippy warning `single_char_pattern`.
 
-## [0.1.21] (2023-01-10)
+## [0.1.21] - 2023-01-10
 ### Added
-* badges into `README.tpl`
+- Badges in `README.tpl`.
 
 ### Changed
-* reformat `CHANGELOG.md`
-* move benches into xbench
+- Reformat `CHANGELOG.md`.
+- Move benchmarks to `xbench` directory.
 
-## [0.1.20] (2023-01-05)
+## [0.1.20] - 2023-01-05
 ### Removed
-* "memx/std" of Cargo.toml, this is a old feature.
+- Old `memx/std` feature from `Cargo.toml`.
 
-## [0.1.19] (2023-01-05) YANKED
+## [0.1.19] - 2023-01-05 [YANKED]
 ### Added
-* lto = true into profile.release of Carg.toml
+- `lto = true` to release profile in `Cargo.toml`.
 
 ### Changed
-* update benchmark results
-* update crates: criterion(0.4)
-* change criterion unit 'uc' to 'μc'
+- Update benchmark results.
+- Update `criterion` crate to 0.4.
+- Criterion unit from 'uc' to 'μc'.
 
 ### Fixed
-* clippy: this lifetime isn't used in the impl
+- Clippy warning regarding unused lifetime in implementation.
 
-## [0.1.18] (2022-06-13)
+## [0.1.18] - 2022-06-13
 ### Changed
-* changes to edition 2021
+- Switch to Rust 2021 edition.
 
-## [0.1.17] (2022-02-11)
+## [0.1.17] - 2022-02-11
 ### Added
-* add many `xxx_ignore_ascii_case()`.
+- Multiple `xxx_ignore_ascii_case()` functions.
 
-## [0.1.16] (2021-11-14)
+## [0.1.16] - 2021-11-14
 ### Changed
-* update crates: memx(0.1.18)
-* update crates: serde_json(1.0.70)
+- Update `memx` crate to 0.1.18.
+- Update `serde_json` crate to 1.0.70.
 
-## [0.1.15] (2021-09-11)
+## [0.1.15] - 2021-09-11
 ### Changed
-* update crates: memx(0.1.17)
+- Update `memx` crate to 0.1.17.
 
-## [0.1.14] (2021-09-10)
+## [0.1.14] - 2021-09-10
 ### Changed
-* update crates: memx(0.1.16), anyhow(1.0.43), criterion(0.3.5)
+- Update crates: `memx` (0.1.16), `anyhow` (1.0.43), and `criterion` (0.3.5).
 
-## [0.1.13] (2021-07-06)
+## [0.1.13] - 2021-07-06
 ### Changed
-* update crates: memx(0.1.14)
-* rewrite doc
-* update licenses
+- Update `memx` crate to 0.1.14.
+- Rewrite documentation.
+- Update licenses.
 
-## [0.1.12] (2021-06-20)
+## [0.1.12] - 2021-06-20
 ### Added
-* add "Cargo.lock" into .gitignore
+- `Cargo.lock` to `.gitignore`.
 
 ### Changed
-* update crates: memx(0.1.12) - the important bugs fixed
+- Update `memx` crate to 0.1.12 (bug fixes).
 
-## [0.1.11] (2021-06-06)
+## [0.1.11] - 2021-06-06
 ### Added
-* add ascii stochastics
-* add naive_opt_mc_1st_bytes() and naive_opt_mc_1st_rev_bytes()
+- ASCII stochastics.
+- `naive_opt_mc_1st_bytes()` and `naive_opt_mc_1st_rev_bytes()` functions.
 
 ### Changed
-* faster ascii searching
+- Speed of ASCII searching.
 
-## [0.1.10] (2021-06-03)
+## [0.1.10] - 2021-06-03
 ### Added
-* add to test: a needle large size.
-* add crate memx into depends.
+- Test case for large needle size.
+- `memx` crate to dependencies.
 
 ### Changed
-* replace new bench data: a match size is more than old.
+- Benchmark data with larger match sizes.
 
 ### Removed
-* remove crate libc and crate memchr.
+- `libc` and `memchr` crates.
 
-## [0.1.9] (2021-05-09)
+## [0.1.9] - 2021-05-09
 ### Changed
-* update depends: memchr(2.4.0)
-* split into fallback.rs
+- Update `memchr` dependency to 2.4.0.
+- Split code into `fallback.rs`.
 
-## [0.1.8] (2021-04-20)
+## [0.1.8] - 2021-04-20
 ### Added
-* add xxx_bytes()
+- `xxx_bytes()` functions.
 
-## [0.1.7] (2021-04-09)
+## [0.1.7] - 2021-04-09
 ### Added
-* add output2() into `task shape_benchmark_results`
-* add libc support for 'cfg(not(target_arch = "x86_64"))'
+- `output2()` to `shape_benchmark_results` task.
+- `libc` support for non-x86_64 architectures.
 
-## [0.1.6] (2021-04-04)
+## [0.1.6] - 2021-04-04
 ### Added
-* add trait SearchIn.is_empty()
+- `is_empty()` method to `SearchIn` trait.
 
 ### Changed
-* clippy fix
+- Clippy warnings.
 
-## [0.1.5] (2021-03-20)
+## [0.1.5] - 2021-03-20
 ### Added
-* add Search::rsearch()
-* add Search::rsearch_indices()
-* add string_rsearch()
-* add string_rsearch_indices()
-* add more docs
+- `Search::rsearch()` method.
+- `Search::rsearch_indices()` method.
+- `string_rsearch()` function.
+- `string_rsearch_indices()` function.
+- Additional documentation.
 
-## [0.1.4] (2021-03-19)
+## [0.1.4] - 2021-03-19
 ### Added
-* add impl SearchIn for char
-* add Search::includes()
+- `SearchIn` implementation for `char`.
+- `Search::includes()` method.
 
-## [0.1.3] (2021-03-18)
+## [0.1.3] - 2021-03-18
 ### Changed
-* tune up search_indices
+- Performance of `search_indices`.
 
-## [0.1.2] (2021-03-17)
+## [0.1.2] - 2021-03-17
 ### Added
-* add search_indices
+- `search_indices` function.
 
-## [0.1.1] (2021-03-17)
+## [0.1.1] - 2021-03-17
 ### Added
-* add docs
+- Documentation.
 
-## [0.1.0] (2021-03-17)
-* first commit
+## [0.1.0] - 2021-03-17
+### Added
+- Initial release.
 
 [Unreleased]: https://github.com/aki-akaguma/naive_opt/compare/v0.2.2..HEAD
 [0.2.2]: https://github.com/aki-akaguma/naive_opt/compare/v0.2.1..v0.2.2
